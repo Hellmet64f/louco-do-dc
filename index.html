@@ -109,17 +109,18 @@
         import { getDatabase, ref, push, onChildAdded, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-        // --- SUAS CHAVES REAIS (JÁ INSERIDAS) ---
+        // --- AQUI ESTÃO AS SUAS CHAVES DO FIREBASE ---
         const firebaseConfig = {
             apiKey: "AIzaSyDLzKVUFDu9mL_38bQ65V6ATrUCyn1MmaY",
             authDomain: "chat-ba44c.firebaseapp.com",
+            databaseURL: "https://chat-ba44c-default-rtdb.firebaseio.com",
             projectId: "chat-ba44c",
             storageBucket: "chat-ba44c.firebasestorage.app",
             messagingSenderId: "802680335472",
             appId: "1:802680335472:web:bf121d0615669c17fc58b5",
             measurementId: "G-0X9HQKJ7JD"
         };
-        // -----------------------
+        // ---------------------------------------------
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -189,7 +190,6 @@
         function loadGroups() {
             const groupList = document.getElementById('group-list');
             groupList.innerHTML = "";
-            // Escuta grupos adicionados
             onChildAdded(ref(db, 'groups'), (snapshot) => {
                 const group = snapshot.val();
                 const div = document.createElement('div');
@@ -206,10 +206,7 @@
             document.getElementById('messages-list').innerHTML = "";
             document.getElementById('input-area').style.display = 'flex';
             
-            // Remove listener anterior se houver (simplificado aqui) e adiciona novo
             const messagesRef = ref(db, `messages/${groupId}`);
-            
-            // Usando onValue para carregar e manter atualizado
             onValue(messagesRef, (snapshot) => {
                 const list = document.getElementById('messages-list');
                 list.innerHTML = ""; 
@@ -245,14 +242,13 @@
             if (!file) return;
 
             const type = file.type.startsWith('video') ? 'video' : 'image';
-            // Gera nome único com timestamp
             const storageRef = sRef(storage, `uploads/${Date.now()}_${file.name}`);
             
             alert("Enviando arquivo... aguarde.");
             
             try {
                 const snapshot = await uploadBytes(storageRef, file);
-                const url = await getDownloadURL(snapshot.ref); // Correção aqui para garantir URL correta
+                const url = await getDownloadURL(snapshot.ref);
                 sendMessage(url, type);
             } catch (error) {
                 console.error(error);

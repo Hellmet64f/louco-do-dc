@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="referrer" content="origin-when-cross-origin">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Universe 9.2 - Cinema Integrated</title>
+    <title>Universe 9.3 - Cinema Restricted</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
@@ -123,7 +123,7 @@
             flex-shrink: 0;
         }
 
-        /* --- VIDEO STAGE CSS (ADICIONADO) --- */
+        /* VIDEO STAGE CSS */
         #video-stage-container {
             width: 100%; background: #000; display: none; 
             border-bottom: 1px solid var(--glass-border); flex-direction: column; position: relative;
@@ -134,12 +134,19 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* Overlay de Erro do Vídeo */
         #video-error-overlay {
             position: absolute; top:0; left:0; width:100%; height:100%;
             background: rgba(0,0,0,0.9); color: white; display: none;
             flex-direction: column; align-items: center; justify-content: center; z-index: 50;
             text-align: center; padding: 20px;
+        }
+
+        /* Overlay para indicar que o vídeo está bloqueado para membros */
+        #video-locked-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 10px;
+            background: rgba(239, 68, 68, 0.9); color: white; 
+            text-align: center; font-size: 12px; font-weight: 600;
+            display: none; z-index: 60;
         }
 
         .player-hidden { display: none !important; }
@@ -290,7 +297,7 @@
             <div style="background: var(--primary); width: 54px; height: 54px; border-radius: 16px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
                 <span class="material-icons" style="font-size: 28px; color: white;">rocket_launch</span>
             </div>
-            <h1>Universe <span style="color: var(--primary);">9.2</span></h1>
+            <h1>Universe <span style="color: var(--primary);">9.3</span></h1>
             <input type="email" id="email" placeholder="E-mail">
             <input type="password" id="password" placeholder="Senha">
             <input type="text" id="username" placeholder="Seu Nome" style="display:none">
@@ -368,12 +375,16 @@
                         <div style="font-size: 12px; color: #aaa; max-width: 80%;">O dono deste vídeo proibiu a reprodução fora do YouTube. Tente usar um link MP4 direto.</div>
                     </div>
 
+                    <div id="video-locked-overlay">
+                        🔒 Apenas Admins e Donos podem controlar o vídeo
+                    </div>
+
                     <video id="shared-video" class="player-visible" playsinline webkit-playsinline muted controls></video>
                     <div id="youtube-player" class="player-hidden"></div>
                 </div>
                 <div class="video-controls-bar">
                     <input type="text" id="video-url-input" placeholder="YouTube ou Link MP4..." style="margin:0; flex:1; background: rgba(0,0,0,0.3); border:1px solid var(--glass-border); padding: 8px; color:white; border-radius: 8px;">
-                    <button onclick="changeGroupVideo()" style="width:auto; margin:0; padding:8px 16px; font-size:12px;">Carregar</button>
+                    <button onclick="changeGroupVideo()" id="btn-load-video" style="width:auto; margin:0; padding:8px 16px; font-size:12px;">Carregar</button>
                 </div>
             </div>
 
@@ -459,10 +470,20 @@
             <div id="tab-config" class="tab-content hidden">
                 <label style="font-size:12px; color:var(--text-muted);">Nome do Grupo</label>
                 <input type="text" id="cfg-name">
+                
                 <div style="display:flex; justify-content:space-between; align-items:center; margin:15px 0; background: var(--surface); padding: 10px; border-radius: 12px;">
                     <span>Aprovação Obrigatória</span>
                     <label class="switch"><input type="checkbox" id="chk-approval"><span class="slider"></span></label>
                 </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin:15px 0; background: rgba(244, 114, 182, 0.1); padding: 10px; border-radius: 12px; border: 1px solid rgba(244, 114, 182, 0.3);">
+                    <div>
+                        <div style="font-weight: 600; font-size: 13px; color: #f472b6;">🔒 Controle de Vídeo Restrito</div>
+                        <div style="font-size: 10px; color: var(--text-muted); margin-top: 3px;">Apenas admins podem controlar</div>
+                    </div>
+                    <label class="switch"><input type="checkbox" id="chk-video-restricted"><span class="slider"></span></label>
+                </div>
+                
                 <button onclick="saveGroupConfig()">Salvar Alterações</button>
                 <div style="margin-top:20px; padding-top:20px; border-top:1px solid var(--danger);">
                     <button onclick="deleteGroup()" class="danger-btn" id="btn-del-group" style="background:var(--danger); color:white; display:none;">Apagar Grupo (Dono)</button>
@@ -609,6 +630,43 @@
             if(event.data === 150 || event.data === 101 || event.data === 153) {
                 document.getElementById('video-error-overlay').style.display = 'flex';
                 document.getElementById('youtube-player').style.opacity = '0.1';
+            }
+        }
+
+        // ===== VERIFICAR PERMISSÃO DE VÍDEO =====
+        function canControlVideo() {
+            if(!currentChatType || currentChatType !== 'group' || !currentGroupData) return false;
+            
+            const videoRestricted = currentGroupData.settings?.videoRestricted || false;
+            if(!videoRestricted) return true; // Se não está restrito, todos podem controlar
+            
+            const members = currentGroupData.members || {};
+            const myRole = members[user.uid]?.role || 'member';
+            return myRole === 'admin' || myRole === 'owner';
+        }
+
+        function updateVideoControlsUI() {
+            const canControl = canControlVideo();
+            const lockedOverlay = document.getElementById('video-locked-overlay');
+            const loadBtn = document.getElementById('btn-load-video');
+            const urlInput = document.getElementById('video-url-input');
+            
+            // Mostrar/esconder overlay de bloqueio
+            lockedOverlay.style.display = canControl ? 'none' : 'block';
+            
+            // Desabilitar botão e input
+            loadBtn.disabled = !canControl;
+            loadBtn.style.opacity = canControl ? '1' : '0.5';
+            urlInput.disabled = !canControl;
+            urlInput.style.opacity = canControl ? '1' : '0.5';
+            
+            // Desabilitar controles do vídeo HTML5
+            if(!canControl) {
+                html5Player.removeAttribute('controls');
+                html5Player.style.pointerEvents = 'none';
+            } else {
+                html5Player.setAttribute('controls', 'controls');
+                html5Player.style.pointerEvents = 'auto';
             }
         }
 
@@ -768,13 +826,11 @@
             document.getElementById('input-area-wrapper').style.display = 'block';
             document.getElementById('chat-actions').style.display = 'flex';
             
-            // Controle dos botões do topo
             document.getElementById('btn-block-user').style.display = type === 'private' ? 'flex' : 'none';
             document.getElementById('btn-group-info').style.display = type === 'group' ? 'flex' : 'none';
             document.getElementById('btn-video-toggle').style.display = type === 'group' ? 'flex' : 'none';
             document.getElementById('channels-bar').style.display = type === 'group' ? 'flex' : 'none';
             
-            // Reset do vídeo ao trocar de chat
             document.getElementById('video-stage-container').style.display = 'none';
             if(videoUnsub) { videoUnsub(); videoUnsub = null; }
             html5Player.pause();
@@ -796,8 +852,8 @@
                     currentGroupData = s.val();
                     if(!currentGroupData) return; 
                     checkPermissions();
+                    updateVideoControlsUI(); // Atualizar UI do vídeo
                 });
-                // INICIAR LISTENER DE VIDEO
                 initGroupVideo(id);
             } else {
                 currentGroupData = null;
@@ -807,13 +863,12 @@
             loadMessages();
         };
 
-        // ===== LÓGICA DE VÍDEO SYNC (INICIO) =====
+        // ===== LÓGICA DE VÍDEO SYNC =====
         function initGroupVideo(groupId) {
             videoUnsub = onValue(ref(db, `groups/${groupId}/player`), (snap) => {
                 const data = snap.val();
                 if(!data) return;
                 
-                // Se alguém carregar um vídeo, o palco abre pra todos
                 if(data.url) {
                     document.getElementById('video-stage-container').style.display = 'flex';
                     document.getElementById('video-error-overlay').style.display = 'none';
@@ -828,10 +883,8 @@
                         const currentId = youtubePlayer.getVideoData() ? youtubePlayer.getVideoData().video_id : null;
                         if(currentId !== data.url) youtubePlayer.loadVideoById(data.url);
                         
-                        // Sync Tempo
                         if(Math.abs(youtubePlayer.getCurrentTime() - data.currentTime) > 2) youtubePlayer.seekTo(data.currentTime);
                         
-                        // Sync Status
                         const state = youtubePlayer.getPlayerState();
                         if(data.status === 'playing' && state !== 1) youtubePlayer.playVideo();
                         if(data.status === 'paused' && state !== 2) youtubePlayer.pauseVideo();
@@ -850,6 +903,9 @@
                 
                 document.getElementById('video-url-input').value = data.fullUrl || "";
                 isRemoteUpdate = false;
+                
+                // Atualizar UI de controles após cada sync
+                updateVideoControlsUI();
             });
         }
 
@@ -871,14 +927,35 @@
             return (m && m[2].length === 11) ? m[2] : null;
         }
 
-        // Eventos HTML5
-        html5Player.onplay = () => updateState('playing', html5Player.currentTime);
-        html5Player.onpause = () => updateState('paused', html5Player.currentTime);
-        html5Player.onseeked = () => updateState(html5Player.paused ? 'paused' : 'playing', html5Player.currentTime);
+        // Eventos HTML5 - COM VERIFICAÇÃO DE PERMISSÃO
+        html5Player.onplay = () => {
+            if(canControlVideo()) updateState('playing', html5Player.currentTime);
+            else html5Player.pause(); // Bloquear play
+        };
+        html5Player.onpause = () => {
+            if(canControlVideo()) updateState('paused', html5Player.currentTime);
+        };
+        html5Player.onseeked = () => {
+            if(canControlVideo()) updateState(html5Player.paused ? 'paused' : 'playing', html5Player.currentTime);
+            else { 
+                // Se não tem permissão, voltar ao tempo sincronizado
+                isRemoteUpdate = true;
+                // Pegar tempo atual do Firebase e restaurar
+            }
+        };
 
-        // Eventos YouTube
+        // Eventos YouTube - COM VERIFICAÇÃO DE PERMISSÃO
         function onYoutubeStateChange(e) {
             if(isRemoteUpdate) return;
+            if(!canControlVideo()) {
+                // Bloquear controle: pausar se tentou dar play
+                if(e.data === YT.PlayerState.PLAYING) {
+                    youtubePlayer.pauseVideo();
+                    showToast("🔒 Apenas admins podem controlar o vídeo", "error");
+                }
+                return;
+            }
+            
             let st = 'paused';
             if (e.data === YT.PlayerState.PLAYING) st = 'playing';
             if (e.data === YT.PlayerState.PLAYING || e.data === YT.PlayerState.PAUSED) {
@@ -888,12 +965,18 @@
 
         function updateState(status, time) {
             if(isRemoteUpdate || !currentChatId) return;
+            if(!canControlVideo()) return; // Segurança extra
+            
             update(ref(db, `groups/${currentChatId}/player`), {
                 status, currentTime: time, timestamp: serverTimestamp(), lastUpdatedBy: user.displayName
             });
         }
         
         window.changeGroupVideo = async () => {
+            if(!canControlVideo()) {
+                return showToast("🔒 Apenas admins podem carregar vídeos", "error");
+            }
+            
             const url = document.getElementById('video-url-input').value.trim();
             if(!url || !currentChatId) return;
             const ytId = getYoutubeId(url);
@@ -912,7 +995,6 @@
             const s = document.getElementById('video-stage-container');
             s.style.display = s.style.display === 'none' ? 'flex' : 'none';
         }
-        // ===== LÓGICA DE VÍDEO SYNC (FIM) =====
 
         window.setChannel = (ch) => {
             currentChannel = ch;
@@ -1147,6 +1229,7 @@
             if(isAdmin) {
                 document.getElementById('cfg-name').value = currentGroupData.name;
                 document.getElementById('chk-approval').checked = currentGroupData.settings?.approval || false;
+                document.getElementById('chk-video-restricted').checked = currentGroupData.settings?.videoRestricted || false;
                 loadRequests();
             }
             
@@ -1312,8 +1395,14 @@
         window.saveGroupConfig = async () => {
             const name = document.getElementById('cfg-name').value;
             const app = document.getElementById('chk-approval').checked;
-            await update(ref(db, `groups/${currentChatId}`), { name: name, settings: { approval: app } });
+            const videoRestricted = document.getElementById('chk-video-restricted').checked;
+            
+            await update(ref(db, `groups/${currentChatId}`), { 
+                name: name, 
+                settings: { approval: app, videoRestricted: videoRestricted } 
+            });
             showToast("Salvo");
+            updateVideoControlsUI(); // Atualizar UI imediatamente
         };
 
         window.deleteGroup = async () => {
@@ -1454,7 +1543,7 @@
             const r = await push(ref(db, 'groups'), { 
                 name, createdBy: user.uid, 
                 members: { [user.uid]: { name: user.displayName, role: 'owner' } },
-                settings: { approval: false } 
+                settings: { approval: false, videoRestricted: false } 
             });
             await update(ref(db, `users/${user.uid}/private_groups/${r.key}`), { groupName: name });
             closeModals();

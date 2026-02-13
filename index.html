@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Chat Online</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; height: 100vh; margin: 0; align-items: center; }
+        .chat-container { width: 90%; max-width: 400px; background: white; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; height: 80vh; }
+        .header { background: #0084ff; color: white; padding: 15px; text-align: center; font-weight: bold; }
+        #chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .message { padding: 8px 12px; border-radius: 15px; background: #e4e6eb; color: black; max-width: 80%; align-self: flex-start; word-wrap: break-word; }
+        /* Estilo para diferenciar (opcional, aqui todas parecerão iguais por enquanto) */
+        .input-area { padding: 10px; border-top: 1px solid #ddd; display: flex; gap: 5px; background: #fff; }
+        input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px; outline: none; }
+        button { padding: 10px 20px; background: #0084ff; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0073e6; }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="header">Chat da Galera</div>
+    <div id="chat-box">
+        </div>
+    <div class="input-area">
+        <input type="text" id="messageInput" placeholder="Digite uma mensagem...">
+        <button id="sendBtn">Enviar</button>
+    </div>
+</div>
+
+<script type="module">
+    // Importamos as funções que fazem o chat funcionar
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // SUAS CONFIGURAÇÕES (JÁ INSERIDAS)
+    const firebaseConfig = {
+        apiKey: "AIzaSyDLzKVUFDu9mL_38bQ65V6ATrUCyn1MmaY",
+        authDomain: "chat-ba44c.firebaseapp.com",
+        projectId: "chat-ba44c",
+        storageBucket: "chat-ba44c.firebasestorage.app",
+        messagingSenderId: "802680335472",
+        appId: "1:802680335472:web:bf121d0615669c17fc58b5",
+        measurementId: "G-0X9HQKJ7JD"
+    };
+
+    // Inicializa o Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app); 
+    const messagesRef = ref(db, 'mensagens'); // Cria a sala de bate-papo 'mensagens'
+
+    // 1. Função para enviar mensagem
+    function sendMessage() {
+        const input = document.getElementById('messageInput');
+        const msg = input.value;
+        
+        if(msg.trim() !== "") {
+            // Envia para o banco de dados do Google
+            push(messagesRef, {
+                texto: msg,
+                timestamp: Date.now()
+            });
+            input.value = ""; // Limpa o campo
+        }
+    }
+
+    // Evento de clique no botão
+    document.getElementById('sendBtn').addEventListener('click', sendMessage);
+
+    // Enviar com a tecla Enter
+    document.getElementById('messageInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+    // 2. Função que RECEBE as mensagens em tempo real
+    onChildAdded(messagesRef, (data) => {
+        const msgData = data.val();
+        const chatBox = document.getElementById('chat-box');
+        
+        // Cria o balãozinho da mensagem
+        const novoElemento = document.createElement('div');
+        novoElemento.classList.add('message');
+        novoElemento.innerText = msgData.texto;
+        
+        chatBox.appendChild(novoElemento);
+        
+        // Rola a tela para a última mensagem
+        chatBox.scrollTop = chatBox.scrollHeight;
+    });
+
+    console.log("Chat conectado com sucesso!");
+</script>
+
+</body>
+</html>

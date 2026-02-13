@@ -305,16 +305,17 @@
         import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         // ======================================================
-        // COLOQUE SUAS CHAVES AQUI (IGUAL ANTES)
+        // SUAS CHAVES JÁ CONFIGURADAS AQUI
         // ======================================================
         const firebaseConfig = {
-            apiKey: "SUA_API_KEY_AQUI",  // <--- COLE AQUI
-            authDomain: "SEU_ID.firebaseapp.com",
-            databaseURL: "https://SEU_ID-default-rtdb.firebaseio.com",
-            projectId: "SEU_ID",
-            storageBucket: "SEU_ID.appspot.com",
-            messagingSenderId: "NUMERO",
-            appId: "APP_ID"
+            apiKey: "AIzaSyDLzKVUFDu9mL_38bQ65V6ATrUCyn1MmaY",
+            authDomain: "chat-ba44c.firebaseapp.com",
+            databaseURL: "https://chat-ba44c-default-rtdb.firebaseio.com",
+            projectId: "chat-ba44c",
+            storageBucket: "chat-ba44c.firebasestorage.app",
+            messagingSenderId: "802680335472",
+            appId: "1:802680335472:web:bf121d0615669c17fc58b5",
+            measurementId: "G-0X9HQKJ7JD"
         };
         // ======================================================
 
@@ -440,8 +441,7 @@
             const targetEmail = document.getElementById('new-contact-email').value;
             if(targetEmail === user.email) return alert("Você não pode conversar com você mesmo.");
 
-            // Buscar usuário pelo email (meio manual pois Firebase não busca fácil sem backend)
-            // Lendo todos os usuários (não é ideal para apps gigantes, mas ok para github pages)
+            // Buscar usuário pelo email
             const snapshot = await get(ref(db, 'users'));
             let foundUser = null;
             let foundUid = null;
@@ -455,7 +455,7 @@
             });
 
             if(foundUser) {
-                // Criar ID único para conversa (combinação dos dois IDs)
+                // Criar ID único para conversa
                 const chatId = [user.uid, foundUid].sort().join("_");
                 
                 // Salvar referência no MEU perfil
@@ -467,12 +467,11 @@
                 alert("Conversa iniciada!");
                 closeModals();
             } else {
-                alert("Usuário não encontrado!");
+                alert("Usuário não encontrado! Verifique se digitou o e-mail certo.");
             }
         };
 
         // --- PERFIL ---
-        // 1. Meu Perfil (Editar)
         window.openMyProfile = () => {
             document.getElementById('modal-profile').style.display = 'flex';
             document.getElementById('profile-modal-title').innerText = "Editar Meu Perfil";
@@ -495,14 +494,12 @@
             closeModals();
         };
 
-        // 2. Ver Perfil de Outro (Ao clicar na mensagem)
         window.viewUserProfile = async (uid, name) => {
             document.getElementById('modal-profile').style.display = 'flex';
             document.getElementById('profile-modal-title').innerText = "Perfil de Usuário";
             document.getElementById('edit-profile-area').style.display = 'none';
             document.getElementById('view-profile-area').style.display = 'block';
 
-            // Buscar dados frescos
             const snap = await get(ref(db, `users/${uid}`));
             const data = snap.val();
 
@@ -548,7 +545,6 @@
             if(msg.type === 'image') midia = `<img src="${msg.fileUrl}" style="max-width:200px; border-radius:10px; display:block; margin-top:5px">`;
             if(msg.type === 'video') midia = `<video src="${msg.fileUrl}" controls style="max-width:250px; border-radius:10px; display:block; margin-top:5px"></video>`;
 
-            // O nome do remetente agora é clicável para ver perfil
             const senderHtml = `<span class="msg-sender" onclick="viewUserProfile('${msg.senderId}', '${msg.sender}')">${msg.sender}</span>`;
 
             div.innerHTML = `${isMe ? '' : senderHtml} ${msg.text} ${midia}`;

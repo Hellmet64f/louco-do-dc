@@ -109,14 +109,15 @@
         import { getDatabase, ref, push, onChildAdded, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-        // --- SUAS CHAVES AQUI ---
+        // --- SUAS CHAVES REAIS (JÁ INSERIDAS) ---
         const firebaseConfig = {
-            apiKey: "SUA_API_KEY_AQUI",
-            authDomain: "SEU_PROJETO.firebaseapp.com",
-            projectId: "SEU_PROJETO",
-            storageBucket: "SEU_PROJETO.appspot.com",
-            messagingSenderId: "NUMERO",
-            appId: "ID_DO_APP"
+            apiKey: "AIzaSyDLzKVUFDu9mL_38bQ65V6ATrUCyn1MmaY",
+            authDomain: "chat-ba44c.firebaseapp.com",
+            projectId: "chat-ba44c",
+            storageBucket: "chat-ba44c.firebasestorage.app",
+            messagingSenderId: "802680335472",
+            appId: "1:802680335472:web:bf121d0615669c17fc58b5",
+            measurementId: "G-0X9HQKJ7JD"
         };
         // -----------------------
 
@@ -188,6 +189,7 @@
         function loadGroups() {
             const groupList = document.getElementById('group-list');
             groupList.innerHTML = "";
+            // Escuta grupos adicionados
             onChildAdded(ref(db, 'groups'), (snapshot) => {
                 const group = snapshot.val();
                 const div = document.createElement('div');
@@ -204,11 +206,13 @@
             document.getElementById('messages-list').innerHTML = "";
             document.getElementById('input-area').style.display = 'flex';
             
-            // Carregar mensagens do grupo
+            // Remove listener anterior se houver (simplificado aqui) e adiciona novo
             const messagesRef = ref(db, `messages/${groupId}`);
+            
+            // Usando onValue para carregar e manter atualizado
             onValue(messagesRef, (snapshot) => {
                 const list = document.getElementById('messages-list');
-                list.innerHTML = ""; // Limpa para recarregar (modo simples)
+                list.innerHTML = ""; 
                 snapshot.forEach((child) => {
                     const msg = child.val();
                     renderMessage(msg);
@@ -241,17 +245,18 @@
             if (!file) return;
 
             const type = file.type.startsWith('video') ? 'video' : 'image';
+            // Gera nome único com timestamp
             const storageRef = sRef(storage, `uploads/${Date.now()}_${file.name}`);
             
             alert("Enviando arquivo... aguarde.");
             
             try {
-                await uploadBytes(storageRef, file);
-                const url = await getDownloadURL(storageRef);
+                const snapshot = await uploadBytes(storageRef, file);
+                const url = await getDownloadURL(snapshot.ref); // Correção aqui para garantir URL correta
                 sendMessage(url, type);
             } catch (error) {
                 console.error(error);
-                alert("Erro no upload. Verifique se o Storage está ativado.");
+                alert("Erro no upload: " + error.message);
             }
         };
 
@@ -264,9 +269,9 @@
             
             let content = "";
             if (msg.type === 'video') {
-                content = `<video src="${msg.fileUrl}" controls width="250"></video>`;
+                content = `<video src="${msg.fileUrl}" controls width="250" style="max-width:100%"></video>`;
             } else if (msg.type === 'image') {
-                content = `<img src="${msg.fileUrl}" width="200">`;
+                content = `<img src="${msg.fileUrl}" width="200" style="max-width:100%">`;
             }
             if (msg.text) content += `<div>${msg.text}</div>`;
 

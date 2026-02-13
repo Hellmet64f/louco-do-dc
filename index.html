@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Universe</title>
+    <title>Chat Universe 4.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #6366f1;
-            --glass: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --text: #ffffff;
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --primary: #8b5cf6; /* Roxo vibrante */
+            --primary-hover: #7c3aed;
+            --glass: rgba(30, 41, 59, 0.7); /* Vidro escuro */
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text: #f1f5f9;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #312e81 100%);
         }
 
         * { box-sizing: border-box; outline: none; }
@@ -30,176 +31,96 @@
             align-items: center;
         }
 
-        /* --- ESTILO GERAL DE VIDRO (GLASSMORPHISM) --- */
+        /* --- ESTILO GERAL DE VIDRO --- */
         .glass-panel {
             background: var(--glass);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--glass-border);
             border-radius: 16px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
         }
 
-        /* TELA DE LOGIN */
-        #auth-screen {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            z-index: 10;
-        }
-
-        .login-card {
-            width: 350px;
-            padding: 40px;
-            text-align: center;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            color: white;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.3s;
-            margin-top: 10px;
-        }
-        button:hover { filter: brightness(1.2); }
+        /* LOGIN */
+        #auth-screen { display: flex; width: 100%; height: 100%; justify-content: center; align-items: center; flex-direction: column; z-index: 10; position: absolute; background: var(--bg-gradient); }
+        .login-card { width: 350px; padding: 40px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); border-radius: 8px; color: white; transition: 0.3s; }
+        input:focus { border-color: var(--primary); background: rgba(0,0,0,0.6); }
+        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        button:hover { background: var(--primary-hover); transform: translateY(-1px); }
         .secondary-btn { background: transparent; border: 1px solid var(--glass-border); }
+        .secondary-btn:hover { background: rgba(255,255,255,0.05); }
 
-        /* TELA DO APP */
-        #app-screen {
-            display: none;
-            width: 95%;
-            height: 90%;
-            gap: 20px;
-        }
-
+        /* APP */
+        #app-screen { display: none; width: 95%; height: 95%; gap: 15px; max-width: 1400px; }
+        
         /* SIDEBAR */
-        .sidebar {
-            width: 300px;
-            display: flex;
-            flex-direction: column;
+        .sidebar { width: 320px; display: flex; flex-direction: column; padding: 0; overflow: hidden; }
+        
+        .my-profile-card {
             padding: 20px;
-        }
-
-        .user-profile {
+            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid var(--glass-border);
             display: flex;
             align-items: center;
             gap: 12px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--glass-border);
             cursor: pointer;
-        }
-        
-        .avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--primary);
-        }
-
-        .menu-title { font-size: 12px; color: #aaa; margin: 20px 0 10px; text-transform: uppercase; letter-spacing: 1px; }
-
-        .chat-list { flex: 1; overflow-y: auto; }
-        
-        .chat-item {
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
             transition: 0.2s;
-            margin-bottom: 5px;
         }
-        .chat-item:hover { background: rgba(255,255,255,0.05); }
-        .chat-item.active { background: var(--primary); }
+        .my-profile-card:hover { background: rgba(255,255,255,0.05); }
 
-        /* ÁREA DE CHAT */
-        .chat-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
+        .avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); flex-shrink: 0; background: #000; }
+        .status-dot { width: 10px; height: 10px; background: #4ade80; border-radius: 50%; display: inline-block; margin-right: 5px; }
 
-        .chat-header {
-            padding: 15px;
-            border-bottom: 1px solid var(--glass-border);
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        #messages-list {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .msg {
-            max-width: 70%;
-            padding: 10px 15px;
-            border-radius: 12px;
-            font-size: 14px;
-            line-height: 1.4;
-            position: relative;
-        }
-        .msg.sent { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
-        .msg.received { align-self: flex-start; background: rgba(255,255,255,0.1); border-bottom-left-radius: 2px; }
+        .sidebar-content { padding: 20px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+        .menu-title { font-size: 11px; color: #94a3b8; margin: 20px 0 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
         
-        .msg-sender { font-size: 10px; opacity: 0.7; margin-bottom: 4px; display: block; cursor: pointer; }
-        .msg-sender:hover { text-decoration: underline; }
+        .chat-item { padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; color: #cbd5e1; margin-bottom: 5px; }
+        .chat-item:hover { background: rgba(255,255,255,0.08); color: white; }
+        .chat-item.active { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.3); }
 
-        .input-area {
-            padding: 15px;
-            border-top: 1px solid var(--glass-border);
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .input-area input { margin: 0; background: rgba(0,0,0,0.2); }
-        .icon-btn { width: 40px; padding: 0; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0; }
+        /* CHAT AREA */
+        .chat-area { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        .chat-header { padding: 15px 25px; border-bottom: 1px solid var(--glass-border); background: rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        
+        #messages-list { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
+        
+        .msg { max-width: 65%; padding: 12px 16px; border-radius: 12px; font-size: 15px; line-height: 1.5; position: relative; animation: fadeIn 0.3s; word-wrap: break-word; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .msg.sent { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2); }
+        .msg.received { align-self: flex-start; background: rgba(30, 41, 59, 0.8); border: 1px solid var(--glass-border); border-bottom-left-radius: 2px; }
+        .msg-sender { font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 4px; display: block; cursor: pointer; font-weight: bold; }
+        .msg-sender:hover { color: white; }
 
-        /* MODAL (Perfil e Add Pessoas) */
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            justify-content: center; align-items: center;
-            z-index: 100;
-        }
-        .modal-content {
-            width: 400px;
-            padding: 30px;
-            position: relative;
-        }
-        .close-btn { position: absolute; top: 10px; right: 10px; cursor: pointer; }
+        /* INPUT AREA */
+        .input-area { padding: 20px; background: rgba(0,0,0,0.2); border-top: 1px solid var(--glass-border); display: flex; gap: 15px; align-items: center; }
+        .icon-btn { width: 45px; height: 45px; padding: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #cbd5e1; }
+        .icon-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+        
+        /* MODALS */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 100; }
+        .modal-content { width: 450px; position: relative; overflow: hidden; padding: 0; }
+        
+        /* BANNER DO PERFIL */
+        .profile-banner { height: 120px; background: #333; position: relative; background-size: cover; background-position: center; }
+        .profile-avatar-large { width: 90px; height: 90px; border-radius: 50%; border: 4px solid #1e293b; position: absolute; bottom: -45px; left: 50%; transform: translateX(-50%); object-fit: cover; background: #000; cursor: pointer; transition: 0.3s; }
+        .profile-avatar-large:hover { opacity: 0.8; }
+        .profile-body { padding: 55px 30px 30px; text-align: center; }
+        .close-modal-btn { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; z-index: 2; display: flex; justify-content: center; align-items: center; }
 
-        /* Responsividade Celular */
+        /* UPLOAD BUTTONS */
+        .upload-overlay { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); padding: 5px 10px; border-radius: 20px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .hidden-input { display: none; }
+
+        /* Responsividade */
         @media (max-width: 768px) {
-            #app-screen { flex-direction: column; width: 100%; height: 100%; }
-            .sidebar { width: 100%; height: 30%; border-right: none; border-bottom: 1px solid var(--glass-border); }
-            .chat-area { height: 70%; }
+            #app-screen { flex-direction: column; width: 100%; height: 100%; border-radius: 0; }
+            .sidebar { width: 100%; height: 60px; flex-direction: row; align-items: center; border-bottom: 1px solid var(--glass-border); padding: 0 10px; background: #0f172a; }
+            .my-profile-card { border: none; background: transparent; padding: 5px; }
+            .sidebar-content { display: none; /* Menu escondido no mobile por enquanto para simplificar */ } 
+            .mobile-menu-btn { display: block; }
+            .chat-area { height: calc(100% - 60px); }
         }
     </style>
 </head>
@@ -207,94 +128,114 @@
 
     <div id="auth-screen">
         <div class="glass-panel login-card">
-            <h1 style="margin-bottom: 5px;">Chat Universe</h1>
-            <p style="color:#aaa; font-size:14px; margin-bottom:20px">Conecte-se ao futuro</p>
+            <h1 style="margin-bottom: 5px; background: linear-gradient(to right, #a78bfa, #2dd4bf); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Chat Universe</h1>
+            <p style="color:#94a3b8; font-size:14px; margin-bottom:30px">Conecte-se. Converse. Compartilhe.</p>
             
             <input type="email" id="email" placeholder="Seu E-mail">
             <input type="password" id="password" placeholder="Sua Senha">
-            <input type="text" id="username" placeholder="Nome de Exibição (Novo Usuário)" style="display:none">
+            <input type="text" id="username" placeholder="Seu Nome (Apenas Cadastro)" style="display:none">
             
-            <button onclick="handleLogin()" id="btn-login">ENTRAR</button>
-            <button class="secondary-btn" onclick="toggleAuth()" id="btn-toggle">CRIAR CONTA</button>
+            <button onclick="handleLogin()" id="btn-login"><span class="material-icons">login</span> ENTRAR</button>
+            <button class="secondary-btn" onclick="toggleAuth()" id="btn-toggle">Não tem conta? Crie agora</button>
         </div>
     </div>
 
     <div id="app-screen">
         
         <div class="glass-panel sidebar">
-            <div class="user-profile" onclick="openMyProfile()">
-                <img id="my-avatar" class="avatar" src="">
-                <div>
-                    <div id="my-name" style="font-weight:600">Carregando...</div>
-                    <div style="font-size:12px; color:#aaa; display:flex; align-items:center; gap:5px">
-                        <span style="width:8px; height:8px; background:#4ade80; border-radius:50%"></span> Online
-                    </div>
+            <div class="my-profile-card" onclick="openSettings()">
+                <img id="sidebar-avatar" class="avatar" src="">
+                <div style="flex:1; min-width: 0;">
+                    <div id="sidebar-name" style="font-weight:600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">...</div>
+                    <div style="font-size:12px; color:#94a3b8;"><span class="status-dot"></span>Online</div>
                 </div>
+                <span class="material-icons" style="color:#94a3b8">settings</span>
             </div>
 
-            <div style="display:flex; gap:10px; margin-top:15px">
-                <button onclick="openAddModal()" style="font-size:12px; padding:8px">+ NOVA CONVERSA</button>
-            </div>
+            <div class="sidebar-content">
+                <button onclick="openAddModal()" style="font-size:13px; padding:10px; margin-bottom:10px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);">+ NOVA CONVERSA</button>
 
-            <div class="menu-title">Suas Conversas</div>
-            <div id="chat-list" class="chat-list">
-                </div>
-            
-            <button onclick="logout()" class="secondary-btn" style="margin-top:10px; color:#ff6b6b; border-color:#ff6b6b">SAIR</button>
+                <div class="menu-title">Seus Grupos e Chats</div>
+                <div id="chat-list" style="flex:1; overflow-y:auto"></div>
+                
+                <button onclick="logout()" class="secondary-btn" style="margin-top:auto; color:#ef4444; border-color: rgba(239,68,68,0.3);"><span class="material-icons" style="font-size:16px">logout</span> SAIR</button>
+            </div>
         </div>
 
         <div class="glass-panel chat-area">
-            <div class="chat-header" id="chat-title">Selecione uma conversa</div>
+            <div class="chat-header">
+                <div id="chat-title-area" style="font-weight: bold; font-size: 1.1rem; display:flex; align-items:center; gap:10px">Selecione um chat</div>
+                <button id="add-member-btn" onclick="openAddMemberModal()" style="width:auto; padding: 5px 15px; font-size:12px; display:none"><span class="material-icons" style="font-size:16px">person_add</span> Add Pessoa</button>
+            </div>
             
-            <div id="messages-list"></div>
+            <div id="messages-list">
+                <div style="text-align:center; color:#64748b; margin-top:50px">
+                    <span class="material-icons" style="font-size:48px; opacity:0.5">chat_bubble_outline</span>
+                    <p>Escolha uma conversa ao lado para começar.</p>
+                </div>
+            </div>
 
             <div class="input-area" id="input-area" style="display:none">
-                <label for="file-input" class="icon-btn" style="background:transparent; border:1px solid #555"><span class="material-icons">attach_file</span></label>
-                <input type="file" id="file-input" style="display:none" onchange="uploadFile(this)">
+                <label for="file-input" class="icon-btn" title="Enviar Arquivo"><span class="material-icons">attach_file</span></label>
+                <input type="file" id="file-input" class="hidden-input" onchange="uploadFile(this)">
                 
-                <input type="text" id="msg-input" placeholder="Digite sua mensagem...">
-                <button class="icon-btn" onclick="sendMessage()"><span class="material-icons">send</span></button>
+                <input type="text" id="msg-input" placeholder="Digite sua mensagem..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <button class="icon-btn" onclick="sendMessage()" style="background:var(--primary); border:none"><span class="material-icons">send</span></button>
             </div>
         </div>
     </div>
 
     <div id="modal-add" class="modal">
-        <div class="glass-panel modal-content">
-            <span class="material-icons close-btn" onclick="closeModals()">close</span>
-            <h3>Nova Conversa</h3>
+        <div class="glass-panel modal-content" style="padding:30px">
+            <button class="close-modal-btn" onclick="closeModals()"><span class="material-icons">close</span></button>
+            <h3 style="margin-top:0">Nova Conversa</h3>
             
-            <div style="margin-bottom: 20px; border-bottom: 1px solid #444; padding-bottom: 20px;">
-                <label>Criar Grupo Público</label>
-                <input type="text" id="new-group-name" placeholder="Nome do Grupo (ex: Games)">
-                <button onclick="createGroup()">CRIAR GRUPO</button>
+            <div style="margin-bottom: 25px; border-bottom: 1px solid var(--glass-border); padding-bottom: 25px;">
+                <label style="font-size:12px; color:#94a3b8">CRIAR GRUPO</label>
+                <input type="text" id="new-group-name" placeholder="Nome do Grupo (ex: Galera do PC)">
+                <button onclick="createGroup()">Criar Grupo</button>
             </div>
 
             <div>
-                <label>Adicionar Pessoa (Privado)</label>
-                <p style="font-size:12px; color:#aaa">Digite o e-mail exato do seu amigo.</p>
-                <input type="email" id="new-contact-email" placeholder="email@amigo.com">
-                <button onclick="addPrivateChat()" class="secondary-btn">INICIAR CHAT PRIVADO</button>
+                <label style="font-size:12px; color:#94a3b8">CHAT PRIVADO (DM)</label>
+                <input type="email" id="new-contact-email" placeholder="E-mail exato do amigo">
+                <button onclick="addPrivateChat()" class="secondary-btn">Iniciar Chat</button>
             </div>
         </div>
     </div>
 
-    <div id="modal-profile" class="modal">
-        <div class="glass-panel modal-content" style="text-align:center">
-            <span class="material-icons close-btn" onclick="closeModals()">close</span>
-            <h3 id="profile-modal-title">Perfil</h3>
+    <div id="modal-settings" class="modal">
+        <div class="glass-panel modal-content">
+            <button class="close-modal-btn" onclick="closeModals()"><span class="material-icons">close</span></button>
             
-            <img id="profile-img-preview" src="" class="avatar" style="width:100px; height:100px; margin: 0 auto 15px auto; display:block">
-            
-            <div id="edit-profile-area">
-                <input type="text" id="edit-name" placeholder="Novo Nome">
-                <input type="text" id="edit-photo-url" placeholder="URL da Foto (Link da imagem)">
-                <button onclick="saveProfile()">SALVAR ALTERAÇÕES</button>
+            <div id="settings-banner" class="profile-banner">
+                <label for="banner-upload" class="upload-overlay"><span class="material-icons" style="font-size:14px">edit</span> Editar Capa</label>
+                <input type="file" id="banner-upload" class="hidden-input" accept="image/*" onchange="updateProfileBackground(this)">
             </div>
 
-            <div id="view-profile-area" style="display:none">
-                <h2 id="view-name">Nome</h2>
-                <p id="view-email" style="color:#aaa">Email</p>
+            <label for="avatar-upload">
+                <img id="settings-avatar" class="profile-avatar-large" src="">
+                <div style="position: absolute; bottom: -45px; left: 56%; background: var(--primary); border-radius: 50%; width: 25px; height: 25px; display: flex; justify-content: center; align-items: center; border: 2px solid #1e293b;"><span class="material-icons" style="font-size: 14px; color: white;">edit</span></div>
+            </label>
+            <input type="file" id="avatar-upload" class="hidden-input" accept="image/*" onchange="updateProfileImage(this)">
+
+            <div class="profile-body">
+                <h3 style="margin: 10px 0 20px;">Editar Perfil</h3>
+                <label style="text-align:left; display:block; font-size:12px; color:#94a3b8; margin-bottom:5px">Seu Nome</label>
+                <input type="text" id="edit-name" placeholder="Seu nome">
+                
+                <button onclick="saveProfileChanges()">SALVAR ALTERAÇÕES</button>
             </div>
+        </div>
+    </div>
+
+    <div id="modal-add-member" class="modal">
+        <div class="glass-panel modal-content" style="padding:30px">
+            <button class="close-modal-btn" onclick="closeModals()"><span class="material-icons">close</span></button>
+            <h3>Adicionar Membro</h3>
+            <p style="font-size:13px; color:#94a3b8">Adicione alguém a este grupo pelo e-mail.</p>
+            <input type="email" id="add-member-email" placeholder="E-mail do usuário">
+            <button onclick="addMemberToGroup()">Adicionar</button>
         </div>
     </div>
 
@@ -305,17 +246,16 @@
         import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         // ======================================================
-        // SUAS CHAVES JÁ CONFIGURADAS AQUI
+        // --- COLE SUAS CHAVES AQUI ---
         // ======================================================
         const firebaseConfig = {
-            apiKey: "AIzaSyDLzKVUFDu9mL_38bQ65V6ATrUCyn1MmaY",
-            authDomain: "chat-ba44c.firebaseapp.com",
-            databaseURL: "https://chat-ba44c-default-rtdb.firebaseio.com",
-            projectId: "chat-ba44c",
-            storageBucket: "chat-ba44c.firebasestorage.app",
-            messagingSenderId: "802680335472",
-            appId: "1:802680335472:web:bf121d0615669c17fc58b5",
-            measurementId: "G-0X9HQKJ7JD"
+            apiKey: "SUA_API_KEY",
+            authDomain: "SEU_PROJETO.firebaseapp.com",
+            databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
+            projectId: "SEU_PROJETO",
+            storageBucket: "SEU_PROJETO.appspot.com",
+            messagingSenderId: "NUMERO",
+            appId: "APP_ID"
         };
         // ======================================================
 
@@ -327,44 +267,55 @@
         let user = null;
         let currentChatId = null;
         let isRegistering = false;
+        let isGroupChat = false;
 
-        // --- AUTENTICAÇÃO ---
+        // --- SISTEMA DE LOGIN ---
         window.handleLogin = async () => {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
             const name = document.getElementById('username').value;
+            const btn = document.getElementById('btn-login');
 
+            btn.innerText = "Carregando...";
             try {
                 if(isRegistering) {
                     const cred = await createUserWithEmailAndPassword(auth, email, pass);
-                    // Salvar dados iniciais
                     await updateProfile(cred.user, { displayName: name });
                     await set(ref(db, 'users/' + cred.user.uid), {
                         name: name,
                         email: email,
-                        photo: ""
+                        photo: "",
+                        banner: ""
                     });
                 } else {
                     await signInWithEmailAndPassword(auth, email, pass);
                 }
-            } catch(e) { alert("Erro: " + e.message); }
+            } catch(e) { 
+                alert("Erro: " + e.message); 
+                btn.innerHTML = `<span class="material-icons">login</span> ENTRAR`;
+            }
         };
 
         window.toggleAuth = () => {
             isRegistering = !isRegistering;
             document.getElementById('username').style.display = isRegistering ? 'block' : 'none';
-            document.getElementById('btn-login').innerText = isRegistering ? 'CADASTRAR' : 'ENTRAR';
-            document.getElementById('btn-toggle').innerText = isRegistering ? 'Voltar para Login' : 'CRIAR CONTA';
+            document.getElementById('btn-login').innerHTML = isRegistering ? '<span class="material-icons">person_add</span> CADASTRAR' : '<span class="material-icons">login</span> ENTRAR';
+            document.getElementById('btn-toggle').innerText = isRegistering ? 'Voltar para Login' : 'Não tem conta? Crie agora';
         };
 
         window.logout = () => signOut(auth);
 
-        onAuthStateChanged(auth, (u) => {
+        onAuthStateChanged(auth, async (u) => {
             if(u) {
                 user = u;
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('app-screen').style.display = 'flex';
-                updateMyProfileUI();
+                
+                // Carregar dados extras do perfil (como o banner)
+                const snap = await get(ref(db, `users/${user.uid}`));
+                const userData = snap.val() || {};
+                
+                updateSidebarUI(user.displayName, user.photoURL);
                 loadChats();
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
@@ -372,45 +323,114 @@
             }
         });
 
-        function updateMyProfileUI() {
-            document.getElementById('my-name').innerText = user.displayName;
-            // Se não tiver foto, usa uma genérica
-            document.getElementById('my-avatar').src = user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName}&background=6366f1&color=fff`;
+        function updateSidebarUI(name, photo) {
+            document.getElementById('sidebar-name').innerText = name;
+            document.getElementById('sidebar-avatar').src = photo || `https://ui-avatars.com/api/?name=${name}&background=8b5cf6&color=fff`;
         }
 
-        // --- SISTEMA DE CHATS (GRUPOS E PRIVADO) ---
+        // --- SISTEMA DE CONFIGURAÇÕES (PERFIL) ---
+        window.openSettings = async () => {
+            document.getElementById('modal-settings').style.display = 'flex';
+            document.getElementById('edit-name').value = user.displayName;
+            
+            // Carregar Banner e Foto atuais
+            const snap = await get(ref(db, `users/${user.uid}`));
+            const data = snap.val() || {};
+            
+            document.getElementById('settings-avatar').src = user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName}`;
+            const bannerUrl = data.banner || 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800&q=80';
+            document.getElementById('settings-banner').style.backgroundImage = `url('${bannerUrl}')`;
+        };
+
+        // Upload de Imagem de Perfil
+        window.updateProfileImage = async (input) => {
+            const file = input.files[0];
+            if(!file) return;
+            alert("Enviando foto... Aguarde.");
+            const storageRef = sRef(storage, `avatars/${user.uid}_${Date.now()}`);
+            await uploadBytes(storageRef, file);
+            const url = await getDownloadURL(storageRef);
+            
+            // Atualizar UI preview
+            document.getElementById('settings-avatar').src = url;
+            // Salvar no objeto window para salvar depois ou salvar direto
+            await updateProfile(user, { photoURL: url });
+            await update(ref(db, `users/${user.uid}`), { photo: url });
+            updateSidebarUI(user.displayName, url);
+            alert("Foto de perfil atualizada!");
+        };
+
+        // Upload de Banner
+        window.updateProfileBackground = async (input) => {
+            const file = input.files[0];
+            if(!file) return;
+            alert("Enviando capa... Aguarde.");
+            const storageRef = sRef(storage, `banners/${user.uid}_${Date.now()}`);
+            await uploadBytes(storageRef, file);
+            const url = await getDownloadURL(storageRef);
+            
+            document.getElementById('settings-banner').style.backgroundImage = `url('${url}')`;
+            await update(ref(db, `users/${user.uid}`), { banner: url });
+            alert("Capa atualizada!");
+        };
+
+        window.saveProfileChanges = async () => {
+            const newName = document.getElementById('edit-name').value;
+            if(newName && newName !== user.displayName) {
+                await updateProfile(user, { displayName: newName });
+                await update(ref(db, `users/${user.uid}`), { name: newName });
+                updateSidebarUI(newName, user.photoURL);
+            }
+            closeModals();
+        };
+
+        // --- SISTEMA DE CHATS ---
         function loadChats() {
             const list = document.getElementById('chat-list');
             list.innerHTML = "";
 
-            // 1. Carregar Grupos Públicos
+            // Grupos Públicos (Qualquer um vê)
             onChildAdded(ref(db, 'groups'), (snap) => {
                 const data = snap.val();
-                createChatItem(snap.key, data.name, 'group');
+                createChatItem(snap.key, data.name, 'groups');
             });
 
-            // 2. Carregar Conversas Privadas (Meus Chats)
+            // Chats Privados
             onChildAdded(ref(db, `users/${user.uid}/chats`), (snap) => {
-                const chatId = snap.key; // ID da conversa
-                const friendName = snap.val().friendName; // Nome do amigo salvo
-                createChatItem(chatId, friendName, 'private');
+                createChatItem(snap.key, snap.val().friendName, 'person');
+            });
+            
+            // Grupos Privados (Onde fui adicionado)
+            onChildAdded(ref(db, `users/${user.uid}/private_groups`), (snap) => {
+                createChatItem(snap.key, snap.val().groupName, 'groups');
             });
         }
 
-        function createChatItem(id, name, type) {
+        function createChatItem(id, name, icon) {
+            // Evita duplicatas simples
+            if(document.getElementById(`chat-${id}`)) return;
+
             const div = document.createElement('div');
+            div.id = `chat-${id}`;
             div.className = 'chat-item';
-            let icon = type === 'group' ? 'groups' : 'person';
-            div.innerHTML = `<span class="material-icons">${icon}</span> <span>${name}</span>`;
-            div.onclick = () => openChat(id, name);
+            div.innerHTML = `<span class="material-icons" style="color:#a78bfa">${icon}</span> <span>${name}</span>`;
+            div.onclick = () => {
+                document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
+                div.classList.add('active');
+                openChat(id, name, icon === 'groups');
+            };
             document.getElementById('chat-list').appendChild(div);
         }
 
-        window.openChat = (id, name) => {
+        window.openChat = (id, name, isGroup) => {
             currentChatId = id;
-            document.getElementById('chat-title').innerText = name;
+            isGroupChat = isGroup;
+            document.getElementById('chat-title-area').innerHTML = `<span class="material-icons">${isGroup ? 'groups' : 'person'}</span> ${name}`;
             document.getElementById('messages-list').innerHTML = "";
             document.getElementById('input-area').style.display = 'flex';
+            
+            // Botão de adicionar membro só aparece em grupos
+            document.getElementById('add-member-btn').style.display = isGroup ? 'block' : 'none';
 
             // Carregar mensagens
             const msgRef = ref(db, `messages/${id}`);
@@ -422,93 +442,39 @@
             });
         };
 
-        // --- ADD PESSOAS E GRUPOS ---
-        window.openAddModal = () => document.getElementById('modal-add').style.display = 'flex';
-        window.closeModals = () => {
-            document.getElementById('modal-add').style.display = 'none';
-            document.getElementById('modal-profile').style.display = 'none';
-        }
-
-        window.createGroup = async () => {
-            const name = document.getElementById('new-group-name').value;
-            if(!name) return;
-            await push(ref(db, 'groups'), { name: name, createdBy: user.uid });
-            closeModals();
-        };
-
-        // ADICIONAR PESSOA PELO EMAIL (Sistema de Busca)
-        window.addPrivateChat = async () => {
-            const targetEmail = document.getElementById('new-contact-email').value;
-            if(targetEmail === user.email) return alert("Você não pode conversar com você mesmo.");
-
+        // --- ADD MEMBRO AO GRUPO ---
+        window.openAddMemberModal = () => document.getElementById('modal-add-member').style.display = 'flex';
+        
+        window.addMemberToGroup = async () => {
+            if(!isGroupChat || !currentChatId) return;
+            const email = document.getElementById('add-member-email').value;
+            
             // Buscar usuário pelo email
             const snapshot = await get(ref(db, 'users'));
             let foundUser = null;
             let foundUid = null;
 
             snapshot.forEach(child => {
-                const userData = child.val();
-                if(userData.email === targetEmail) {
-                    foundUser = userData;
+                if(child.val().email === email) {
+                    foundUser = child.val();
                     foundUid = child.key;
                 }
             });
 
             if(foundUser) {
-                // Criar ID único para conversa
-                const chatId = [user.uid, foundUid].sort().join("_");
-                
-                // Salvar referência no MEU perfil
-                await update(ref(db, `users/${user.uid}/chats/${chatId}`), { friendName: foundUser.name });
-                
-                // Salvar referência no perfil DELE
-                await update(ref(db, `users/${foundUid}/chats/${chatId}`), { friendName: user.displayName });
-
-                alert("Conversa iniciada!");
+                const groupName = document.getElementById('chat-title-area').innerText.replace('groups ', ''); // Pega o nome atual
+                // Adiciona o grupo na lista do usuário alvo
+                await update(ref(db, `users/${foundUid}/private_groups/${currentChatId}`), { 
+                    groupName: groupName 
+                });
+                alert(`Usuário ${foundUser.name} adicionado ao grupo!`);
                 closeModals();
             } else {
-                alert("Usuário não encontrado! Verifique se digitou o e-mail certo.");
+                alert("Usuário não encontrado.");
             }
         };
 
-        // --- PERFIL ---
-        window.openMyProfile = () => {
-            document.getElementById('modal-profile').style.display = 'flex';
-            document.getElementById('profile-modal-title').innerText = "Editar Meu Perfil";
-            document.getElementById('edit-profile-area').style.display = 'block';
-            document.getElementById('view-profile-area').style.display = 'none';
-            
-            document.getElementById('edit-name').value = user.displayName;
-            document.getElementById('edit-photo-url').value = user.photoURL || "";
-            document.getElementById('profile-img-preview').src = user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName}`;
-        };
-
-        window.saveProfile = async () => {
-            const newName = document.getElementById('edit-name').value;
-            const newPhoto = document.getElementById('edit-photo-url').value;
-
-            await updateProfile(user, { displayName: newName, photoURL: newPhoto });
-            await update(ref(db, `users/${user.uid}`), { name: newName, photo: newPhoto });
-            
-            updateMyProfileUI();
-            closeModals();
-        };
-
-        window.viewUserProfile = async (uid, name) => {
-            document.getElementById('modal-profile').style.display = 'flex';
-            document.getElementById('profile-modal-title').innerText = "Perfil de Usuário";
-            document.getElementById('edit-profile-area').style.display = 'none';
-            document.getElementById('view-profile-area').style.display = 'block';
-
-            const snap = await get(ref(db, `users/${uid}`));
-            const data = snap.val();
-
-            document.getElementById('view-name').innerText = data.name || name;
-            document.getElementById('view-email').innerText = data.email || "Email oculto";
-            document.getElementById('profile-img-preview').src = data.photo || `https://ui-avatars.com/api/?name=${data.name}`;
-        };
-
-        // --- ENVIAR MENSAGENS ---
+        // --- UPLOADS E MENSAGENS ---
         window.sendMessage = (fileUrl = null, type = 'text') => {
             const txt = document.getElementById('msg-input').value;
             if(!txt && !fileUrl) return;
@@ -519,6 +485,7 @@
                 type: type,
                 sender: user.displayName,
                 senderId: user.uid,
+                avatar: user.photoURL || null,
                 timestamp: Date.now()
             });
             document.getElementById('msg-input').value = "";
@@ -527,11 +494,26 @@
         window.uploadFile = async (input) => {
             const file = input.files[0];
             if(!file) return;
-            const type = file.type.startsWith('video') ? 'video' : 'image';
-            const storageRef = sRef(storage, `uploads/${Date.now()}_${file.name}`);
-            const snp = await uploadBytes(storageRef, file);
-            const url = await getDownloadURL(snp.ref);
-            sendMessage(url, type);
+            
+            // Verifica se é imagem ou video
+            const isVideo = file.type.startsWith('video');
+            const type = isVideo ? 'video' : 'image';
+            
+            const storageRef = sRef(storage, `chat_uploads/${Date.now()}_${file.name}`);
+            
+            // Toast simples
+            const btn = document.querySelector('.input-area button');
+            const oldIcon = btn.innerHTML;
+            btn.innerHTML = "...";
+            
+            try {
+                const snp = await uploadBytes(storageRef, file);
+                const url = await getDownloadURL(snp.ref);
+                sendMessage(url, type);
+            } catch(err) {
+                alert("Erro upload: " + err.message);
+            }
+            btn.innerHTML = oldIcon;
         };
 
         function renderMessage(msg) {
@@ -541,15 +523,61 @@
             const div = document.createElement('div');
             div.className = `msg ${isMe ? 'sent' : 'received'}`;
             
+            // Conteúdo (Texto + Midia)
             let midia = "";
-            if(msg.type === 'image') midia = `<img src="${msg.fileUrl}" style="max-width:200px; border-radius:10px; display:block; margin-top:5px">`;
-            if(msg.type === 'video') midia = `<video src="${msg.fileUrl}" controls style="max-width:250px; border-radius:10px; display:block; margin-top:5px"></video>`;
+            if(msg.type === 'image') midia = `<img src="${msg.fileUrl}" style="max-width:100%; border-radius:8px; display:block; margin-top:5px; cursor:pointer" onclick="window.open(this.src)">`;
+            if(msg.type === 'video') midia = `<video src="${msg.fileUrl}" controls style="max-width:100%; border-radius:8px; display:block; margin-top:5px"></video>`;
 
-            const senderHtml = `<span class="msg-sender" onclick="viewUserProfile('${msg.senderId}', '${msg.sender}')">${msg.sender}</span>`;
+            // Cabeçalho da mensagem (se não for eu)
+            let header = "";
+            if(!isMe) {
+                // Tenta usar o avatar salvo na mensagem, senão usa padrão
+                const avatarSrc = msg.avatar || `https://ui-avatars.com/api/?name=${msg.sender}`;
+                header = `
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px">
+                        <img src="${avatarSrc}" style="width:20px; height:20px; border-radius:50%">
+                        <span class="msg-sender">${msg.sender}</span>
+                    </div>
+                `;
+            }
 
-            div.innerHTML = `${isMe ? '' : senderHtml} ${msg.text} ${midia}`;
+            div.innerHTML = `${header} <div style="color: inherit">${msg.text}</div> ${midia}`;
             list.appendChild(div);
         }
+
+        // --- UTILITÁRIOS ---
+        window.openAddModal = () => document.getElementById('modal-add').style.display = 'flex';
+        window.closeModals = () => {
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+        };
+
+        window.createGroup = async () => {
+            const name = document.getElementById('new-group-name').value;
+            if(!name) return;
+            const refGroup = await push(ref(db, 'groups'), { name: name, createdBy: user.uid });
+            
+            // Adiciona automaticamente para mim também
+            await update(ref(db, `users/${user.uid}/private_groups/${refGroup.key}`), { groupName: name });
+            closeModals();
+        };
+
+        window.addPrivateChat = async () => {
+            const email = document.getElementById('new-contact-email').value;
+            // (Mesma lógica de busca do addMemberToGroup, simplificada)
+            const snapshot = await get(ref(db, 'users'));
+            let foundUser = null;
+            let foundUid = null;
+            snapshot.forEach(child => { if(child.val().email === email) { foundUser = child.val(); foundUid = child.key; }});
+
+            if(foundUser) {
+                const chatId = [user.uid, foundUid].sort().join("_");
+                await update(ref(db, `users/${user.uid}/chats/${chatId}`), { friendName: foundUser.name });
+                await update(ref(db, `users/${foundUid}/chats/${chatId}`), { friendName: user.displayName });
+                alert("Chat criado!");
+                closeModals();
+            } else { alert("Email não encontrado!"); }
+        };
+
     </script>
 </body>
 </html>

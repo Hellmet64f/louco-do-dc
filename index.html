@@ -118,7 +118,7 @@
             #app-screen { flex-direction: column; width: 100%; height: 100%; border-radius: 0; }
             .sidebar { width: 100%; height: 60px; flex-direction: row; align-items: center; border-bottom: 1px solid var(--glass-border); padding: 0 10px; background: #0f172a; }
             .my-profile-card { border: none; background: transparent; padding: 5px; }
-            .sidebar-content { display: none; /* Menu escondido no mobile por enquanto para simplificar */ } 
+            .sidebar-content { display: none; } 
             .mobile-menu-btn { display: block; }
             .chat-area { height: calc(100% - 60px); }
         }
@@ -246,16 +246,17 @@
         import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         // ======================================================
-        // --- COLE SUAS CHAVES AQUI ---
+        // --- SUAS CHAVES JÁ ESTÃO CONFIGURADAS AQUI ---
         // ======================================================
         const firebaseConfig = {
-            apiKey: "SUA_API_KEY",
-            authDomain: "SEU_PROJETO.firebaseapp.com",
-            databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
-            projectId: "SEU_PROJETO",
-            storageBucket: "SEU_PROJETO.appspot.com",
-            messagingSenderId: "NUMERO",
-            appId: "APP_ID"
+            apiKey: "AIzaSyDLzKVUFDu9mL_38bQ65V6ATrUCyn1MmaY",
+            authDomain: "chat-ba44c.firebaseapp.com",
+            databaseURL: "https://chat-ba44c-default-rtdb.firebaseio.com",
+            projectId: "chat-ba44c",
+            storageBucket: "chat-ba44c.firebasestorage.app",
+            messagingSenderId: "802680335472",
+            appId: "1:802680335472:web:bf121d0615669c17fc58b5",
+            measurementId: "G-0X9HQKJ7JD"
         };
         // ======================================================
 

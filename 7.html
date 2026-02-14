@@ -877,26 +877,49 @@
             }
         };
 
+        // MELHORIA: Teste imediato de notificação
         window.enableNotifications = () => {
             if("Notification" in window) {
                 Notification.requestPermission().then(p => { 
-                    if(p==="granted") showToast("Notificações ativadas!"); 
+                    if(p==="granted") {
+                        showToast("Notificações ativadas!", "success");
+                        // Teste imediato
+                        new Notification("Universe 9.3", { body: "As notificações estão funcionando!", icon: "https://cdn-icons-png.flaticon.com/512/1041/1041916.png" });
+                        playSound();
+                    }
                     else showToast("Permissão negada no navegador", "error");
                 });
+            } else {
+                showToast("Seu navegador não suporta notificações", "error");
             }
         };
         
+        // MELHORIA: Tocar som sempre, independente do foco (feedback auditivo constante)
         function playSound() { 
-            // Tenta tocar o som se a aba não estiver focada
-            // Usamos !document.hasFocus() para capturar casos de janelas lado a lado
-            if(!document.hasFocus()) {
-                const audio = document.getElementById('notify-sound');
-                if(audio) {
-                    audio.currentTime = 0; // Reinicia o áudio para sons rápidos
-                    audio.play().catch(e => console.log("Audio bloqueado pelo navegador:", e));
-                }
+            const audio = document.getElementById('notify-sound');
+            if(audio) {
+                audio.currentTime = 0; 
+                audio.play().catch(e => console.log("Audio bloqueado (interaja com a página primeiro):", e));
             }
         }
+
+        // MELHORIA: Flash Title no navegador
+        let titleInterval;
+        const originalTitle = document.title;
+        function flashTitle(text) {
+            if(document.hasFocus()) return;
+            clearInterval(titleInterval);
+            let on = false;
+            titleInterval = setInterval(() => {
+                document.title = on ? originalTitle : text;
+                on = !on;
+            }, 1000);
+        }
+
+        window.addEventListener('focus', () => {
+            clearInterval(titleInterval);
+            document.title = originalTitle;
+        });
 
         function loadChats() {
             onValue(ref(db, `users/${user.uid}/chats`), snap => {
@@ -1218,7 +1241,7 @@
             
             currentChatListener = onValue(q, snap => {
                 const list = document.getElementById('messages-list');
-                const wasAtBottom = list.scrollHeight - list.scrollTop === list.clientHeight;
+                const wasAtBottom = list.scrollHeight - list.scrollTop === list.clientHeight; // Check scroll before update
                 
                 list.innerHTML = "";
                 
@@ -1230,21 +1253,32 @@
                         lastMsg = m;
                     });
                     
-                    if(wasAtBottom) list.scrollTop = list.scrollHeight;
+                    if(wasAtBottom || list.children.length < 10) list.scrollTop = list.scrollHeight;
                     
-                    // Lógica de Notificação Corrigida
+                    // Lógica de Notificação Aprimorada
                     if(lastMsg && lastMsg.senderId !== user.uid) {
                         const now = Date.now();
-                        // Se a mensagem tem menos de 5 segundos, é nova
-                        // Isso previne que o chat apite ao carregar histórico antigo
+                        // Janela de 5 segundos para considerar mensagem nova
                         if (lastMsg.timestamp && (now - lastMsg.timestamp) < 5000) { 
+                             
+                             // 1. Tocar som sempre (para garantir que o usuário saiba)
                              playSound();
-                             if(!document.hasFocus() && "Notification" in window && Notification.permission === "granted") {
-                                 new Notification(`Mensagem de ${lastMsg.sender}`, { 
-                                     body: lastMsg.text || 'Nova mídia',
-                                     icon: lastMsg.avatar || 'https://cdn-icons-png.flaticon.com/512/1041/1041916.png'
-                                 });
+
+                             // 2. Notificação de Sistema (Se tiver permissão)
+                             if("Notification" in window && Notification.permission === "granted") {
+                                 // Removemos a checagem de foco para garantir que apareça "mesmo se não aparecer no site"
+                                 // O usuário pediu explicitamente para aparecer.
+                                 try {
+                                     new Notification(`Mensagem de ${lastMsg.sender}`, { 
+                                         body: lastMsg.text || 'Enviou uma mídia',
+                                         icon: lastMsg.avatar || 'https://cdn-icons-png.flaticon.com/512/1041/1041916.png',
+                                         tag: 'universe-msg' // Evita spam visual empilhando
+                                     });
+                                 } catch(e) { console.error("Erro notificacao", e); }
                              }
+
+                             // 3. Piscar titulo da aba
+                             flashTitle("🔔 Nova Mensagem!");
                         }
                     }
                 }

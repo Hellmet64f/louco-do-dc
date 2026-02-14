@@ -887,9 +887,14 @@
         };
         
         function playSound() { 
-            // Only play if hidden
-            if(document.hidden) {
-                document.getElementById('notify-sound').play().catch(e => {}); 
+            // Tenta tocar o som se a aba não estiver focada
+            // Usamos !document.hasFocus() para capturar casos de janelas lado a lado
+            if(!document.hasFocus()) {
+                const audio = document.getElementById('notify-sound');
+                if(audio) {
+                    audio.currentTime = 0; // Reinicia o áudio para sons rápidos
+                    audio.play().catch(e => console.log("Audio bloqueado pelo navegador:", e));
+                }
             }
         }
 
@@ -1213,7 +1218,10 @@
             
             currentChatListener = onValue(q, snap => {
                 const list = document.getElementById('messages-list');
+                const wasAtBottom = list.scrollHeight - list.scrollTop === list.clientHeight;
+                
                 list.innerHTML = "";
+                
                 if(snap.exists()){
                     let lastMsg = null;
                     snap.forEach(c => {
@@ -1221,13 +1229,22 @@
                         renderMessage(c.key, m);
                         lastMsg = m;
                     });
-                    list.scrollTop = list.scrollHeight;
                     
-                    // Notification Logic
+                    if(wasAtBottom) list.scrollTop = list.scrollHeight;
+                    
+                    // Lógica de Notificação Corrigida
                     if(lastMsg && lastMsg.senderId !== user.uid) {
-                        playSound();
-                        if(document.hidden && "Notification" in window && Notification.permission === "granted") {
-                            new Notification(`Mensagem de ${lastMsg.sender}`, { body: lastMsg.text || 'Nova mídia' });
+                        const now = Date.now();
+                        // Se a mensagem tem menos de 5 segundos, é nova
+                        // Isso previne que o chat apite ao carregar histórico antigo
+                        if (lastMsg.timestamp && (now - lastMsg.timestamp) < 5000) { 
+                             playSound();
+                             if(!document.hasFocus() && "Notification" in window && Notification.permission === "granted") {
+                                 new Notification(`Mensagem de ${lastMsg.sender}`, { 
+                                     body: lastMsg.text || 'Nova mídia',
+                                     icon: lastMsg.avatar || 'https://cdn-icons-png.flaticon.com/512/1041/1041916.png'
+                                 });
+                             }
                         }
                     }
                 }

@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="referrer" content="origin-when-cross-origin">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Universe 9.3 - Cinema Restricted</title>
+    <title>Universe 9.3 - Ultimate</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
@@ -62,12 +63,12 @@
         }
         .login-card h1 { font-weight: 700; font-size: 26px; margin-bottom: 30px; background: linear-gradient(to right, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        input { 
+        input, textarea { 
             width: 100%; padding: 14px 18px; margin: 8px 0; background: rgba(0,0,0,0.3); 
             border: 1px solid var(--glass-border); border-radius: 14px; color: white; 
-            font-size: 15px; transition: var(--transition);
+            font-size: 15px; transition: var(--transition); font-family: 'Inter', sans-serif;
         }
-        input:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); }
+        input:focus, textarea:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); }
         
         button { 
             width: 100%; padding: 14px; background: var(--primary); color: white; border: none; 
@@ -123,15 +124,17 @@
             flex-shrink: 0;
         }
 
-        /* VIDEO STAGE CSS */
+        /* VIDEO STAGE CSS (CINEMA MODE) */
         #video-stage-container {
             width: 100%; background: #000; display: none; 
             border-bottom: 1px solid var(--glass-border); flex-direction: column; position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
         
         .video-wrapper {
             width: 100%; aspect-ratio: 16/9; background: #000; position: relative;
             display: flex; align-items: center; justify-content: center;
+            max-height: 60vh;
         }
 
         #video-error-overlay {
@@ -141,31 +144,28 @@
             text-align: center; padding: 20px;
         }
 
-        /* Overlay para indicar que o vídeo está bloqueado para membros */
         #video-locked-overlay {
-            position: absolute; bottom: 0; left: 0; width: 100%; padding: 10px;
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            padding: 8px 16px; border-radius: 20px;
             background: rgba(239, 68, 68, 0.9); color: white; 
             text-align: center; font-size: 12px; font-weight: 600;
-            display: none; z-index: 60;
+            display: none; z-index: 60; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            pointer-events: none;
         }
 
-        /* Overlay transparente para bloquear cliques no player para membros */
         #video-click-blocker {
-            position: absolute; top: 0; left: 0; width: 100%; height: calc(100% - 50px);
+            position: absolute; top: 0; left: 0; width: 100%; height: calc(100% - 60px);
             background: transparent; display: none; z-index: 55;
             cursor: not-allowed;
-        }
-        #video-click-blocker:hover {
-            background: rgba(0, 0, 0, 0.05);
         }
 
         .player-hidden { display: none !important; }
         .player-visible { display: block !important; width: 100%; height: 100%; }
-        video#shared-video { width: 100%; height: 100%; object-fit: contain; max-height: 50vh; }
+        video#shared-video { width: 100%; height: 100%; object-fit: contain; }
         #youtube-player { width: 100%; height: 100%; }
         
         .video-controls-bar {
-            padding: 10px 20px; background: var(--surface); display: flex; gap: 10px;
+            padding: 15px 20px; background: #0f172a; display: flex; gap: 10px;
             align-items: center; border-top: 1px solid var(--glass-border); flex-wrap: wrap;
         }
 
@@ -264,6 +264,47 @@
             box-shadow: 0 30px 60px rgba(0,0,0,0.6); max-height: 85vh; overflow-y: auto;
         }
 
+        /* PROFILE CARD STYLES */
+        .profile-card {
+            position: relative;
+            background: var(--surface);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+        }
+        .profile-banner {
+            width: 100%; height: 120px;
+            background-color: var(--surface-hover);
+            background-size: cover; background-position: center;
+            position: relative;
+        }
+        .profile-avatar-container {
+            width: 100px; height: 100px;
+            margin: -50px auto 15px;
+            position: relative;
+            border-radius: 50%;
+            padding: 3px;
+            background: var(--bg-deep);
+        }
+        .profile-avatar {
+            width: 100%; height: 100%;
+            border-radius: 50%; object-fit: cover;
+            background: #000;
+        }
+        .profile-bio {
+            font-size: 13px; color: var(--text-muted);
+            padding: 0 20px 20px; line-height: 1.4;
+        }
+        .social-links {
+            display: flex; justify-content: center; gap: 15px;
+            padding-bottom: 25px;
+        }
+        .social-icon {
+            color: var(--text-muted); font-size: 20px; transition: 0.2s; text-decoration: none;
+        }
+        .social-icon:hover { color: var(--primary); transform: translateY(-3px); }
+
         #sticker-picker {
             position: absolute; bottom: 90px; left: 25px; width: 300px; height: 350px;
             background: var(--surface); border: 1px solid var(--glass-border);
@@ -292,7 +333,7 @@
             .chat-area.active { transform: translateX(0); }
             .back-btn { display: flex !important; margin-right: 12px; }
             .sidebar.collapsed { width: 100%; }
-            video#shared-video, #youtube-player { max-height: 30vh; }
+            .video-wrapper { max-height: 35vh; }
         }
     </style>
 </head>
@@ -307,7 +348,7 @@
             <div style="background: var(--primary); width: 54px; height: 54px; border-radius: 16px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
                 <span class="material-icons" style="font-size: 28px; color: white;">rocket_launch</span>
             </div>
-            <h1>Universe <span style="color: var(--primary);">9.3</span></h1>
+            <h1>Universe <span style="color: var(--primary);">Ultimate</span></h1>
             <input type="email" id="email" placeholder="E-mail">
             <input type="password" id="password" placeholder="Senha">
             <input type="text" id="username" placeholder="Seu Nome" style="display:none">
@@ -386,7 +427,7 @@
                     </div>
 
                     <div id="video-locked-overlay">
-                        🔒 Apenas Admins e Donos podem controlar o vídeo
+                        🔒 Apenas Admins controlam o player
                     </div>
 
                     <!-- Overlay transparente para bloquear cliques de membros -->
@@ -396,7 +437,10 @@
                     <div id="youtube-player" class="player-hidden"></div>
                 </div>
                 <div class="video-controls-bar">
-                    <input type="text" id="video-url-input" placeholder="YouTube ou Link MP4..." style="margin:0; flex:1; background: rgba(0,0,0,0.3); border:1px solid var(--glass-border); padding: 8px; color:white; border-radius: 8px;">
+                    <div style="display:flex; align-items:center; gap:5px; color: var(--text-muted); font-size: 12px; margin-right: 10px;">
+                        <span class="material-icons" style="font-size: 16px; color: #f472b6;">smart_display</span> Cinema
+                    </div>
+                    <input type="text" id="video-url-input" placeholder="YouTube ou Link MP4..." style="margin:0; flex:1; background: rgba(255,255,255,0.1); border:1px solid var(--glass-border); padding: 8px; color:white; border-radius: 8px;">
                     <button onclick="changeGroupVideo()" id="btn-load-video" style="width:auto; margin:0; padding:8px 16px; font-size:12px;">Carregar</button>
                 </div>
             </div>
@@ -437,6 +481,7 @@
         </div>
     </div>
 
+    <!-- MODAL GROUP INFO -->
     <div id="modal-group-info" class="modal">
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -505,6 +550,7 @@
         </div>
     </div>
 
+    <!-- MODAL MEMBER ACTION -->
     <div id="modal-member-action" class="modal" style="z-index: 1100;">
         <div class="modal-content" style="max-width:300px; text-align:center;">
             <h3 id="act-name">Nome</h3>
@@ -517,17 +563,72 @@
         </div>
     </div>
 
+    <!-- MODAL USER VIEW PROFILE -->
     <div id="modal-user-view" class="modal">
-        <div class="modal-content" style="text-align:center">
-            <button onclick="closeModals()" style="float:right; border:none; background:none; color:white;"><span class="material-icons">close</span></button>
-            <img id="view-avatar" style="width:100px; height:100px; border-radius:24px; margin:20px auto; display:block; border:3px solid var(--primary); object-fit: cover; background:#1e293b;" src="">
-            <h2 id="view-name" style="margin: 10px 0 5px;">Nome</h2>
-            <p id="view-email" style="color:var(--text-muted); font-size: 14px; margin-bottom: 25px;">email@exemplo.com</p>
-            <button onclick="enableNotifications()" class="secondary-btn" style="margin-bottom:10px;">Ativar Notificações</button>
-            <button onclick="closeModals()" class="secondary-btn" style="width:100%">Fechar</button>
+        <div class="modal-content" style="padding: 0; background: transparent; border: none; box-shadow: none;">
+            <div class="profile-card">
+                <button onclick="closeModals()" style="position: absolute; top:10px; right:10px; z-index:10; background:rgba(0,0,0,0.5); width:30px; height:30px; border-radius:50%; color:white; border:none; padding:0; display:flex; align-items:center; justify-content:center;"><span class="material-icons" style="font-size:18px">close</span></button>
+                <div class="profile-banner" id="view-banner"></div>
+                <div class="profile-avatar-container">
+                    <img id="view-avatar" class="profile-avatar" src="">
+                </div>
+                <h2 id="view-name" style="margin: 0 0 5px;">Nome</h2>
+                <div id="view-bio" class="profile-bio">Sem biografia.</div>
+                
+                <div class="social-links" id="view-socials">
+                    <!-- Icones injetados via JS -->
+                </div>
+                
+                <div style="padding: 0 20px 20px;">
+                     <button onclick="enableNotifications()" class="secondary-btn" style="width:100%; font-size:12px; margin-top:0;">
+                        <span class="material-icons" style="font-size:14px; margin-right:5px;">notifications</span> Ativar Notificações
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- MODAL SETTINGS (EDIT PROFILE) -->
+    <div id="modal-settings" class="modal">
+        <div class="modal-content" style="text-align:center">
+            <button onclick="closeModals()" style="float:right; border:none; background:none; color:white;"><span class="material-icons">close</span></button>
+            <h2 style="margin-top:0;">Editar Perfil</h2>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display:block; text-align:left; font-size:11px; color:var(--text-muted); margin-bottom:5px;">BANNER (CAPA)</label>
+                <div id="edit-banner-preview" style="width:100%; height:80px; background:#334155; border-radius:10px; background-size:cover; background-position:center; margin-bottom:10px;"></div>
+                <label for="banner-upload" class="secondary-btn" style="padding:8px; display:inline-block; width:auto; margin:0;">Alterar Capa</label>
+                <input type="file" id="banner-upload" class="hidden-input" accept="image/*" onchange="uploadBannerImgBB(this)">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label for="avatar-upload" style="position: relative; display: inline-block; cursor: pointer;">
+                    <img id="settings-avatar" style="width:80px; height:80px; border-radius:50%; display:block; border:2px solid var(--primary); object-fit: cover;" src="">
+                    <div style="position: absolute; bottom: 0; right: 0; background: var(--primary); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--surface);">
+                        <span class="material-icons" style="font-size: 12px; color: white;">edit</span>
+                    </div>
+                </label>
+                <input type="file" id="avatar-upload" class="hidden-input" accept="image/*" onchange="updateProfileImageImgBB(this)">
+            </div>
+            
+            <input type="text" id="edit-name" placeholder="Nome de exibição">
+            <textarea id="edit-bio" rows="3" placeholder="Sua biografia..." style="resize:none;"></textarea>
+            
+            <label style="display:block; text-align:left; font-size:11px; color:var(--text-muted); margin-top:10px;">REDES SOCIAIS (Links)</label>
+            <div style="display:flex; gap:10px; margin-bottom:5px;">
+                <span style="display:flex; align-items:center; justify-content:center; width:40px; background:rgba(255,255,255,0.05); border-radius:8px;"><i class="fab fa-instagram"></i></span>
+                <input type="text" id="edit-instagram" placeholder="Link do Instagram" style="margin:0;">
+            </div>
+            <div style="display:flex; gap:10px; margin-bottom:5px;">
+                <span style="display:flex; align-items:center; justify-content:center; width:40px; background:rgba(255,255,255,0.05); border-radius:8px;"><i class="fab fa-twitter"></i></span>
+                <input type="text" id="edit-twitter" placeholder="Link do Twitter/X" style="margin:0;">
+            </div>
+            
+            <button onclick="saveProfileChanges()">Salvar Tudo</button>
+        </div>
+    </div>
+
+    <!-- MODAL ADD (NEW CHAT) -->
     <div id="modal-add" class="modal">
         <div class="modal-content">
             <button onclick="closeModals()" style="float:right; border:none; background:none; color:white;"><span class="material-icons">close</span></button>
@@ -555,22 +656,6 @@
         </div>
     </div>
     
-    <div id="modal-settings" class="modal">
-        <div class="modal-content" style="text-align:center">
-            <button onclick="closeModals()" style="float:right; border:none; background:none; color:white;"><span class="material-icons">close</span></button>
-            <h2 style="margin-top:0;">Meu Perfil</h2>
-            <label for="avatar-upload" style="position: relative; display: inline-block; cursor: pointer;">
-                <img id="settings-avatar" style="width:100px; height:100px; border-radius:24px; margin:20px auto; display:block; border:2px solid var(--primary); object-fit: cover;" src="">
-                <div style="position: absolute; bottom: 10px; right: -5px; background: var(--primary); width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--surface);">
-                    <span class="material-icons" style="font-size: 14px; color: white;">edit</span>
-                </div>
-            </label>
-            <input type="file" id="avatar-upload" class="hidden-input" accept="image/*" onchange="updateProfileImageImgBB(this)">
-            <input type="text" id="edit-name" placeholder="Nome de exibição">
-            <button onclick="saveProfileChanges()">Salvar Alterações</button>
-        </div>
-    </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -594,11 +679,13 @@
         const db = getDatabase(app);
 
         let user = null;
+        let currentUserData = {};
         let currentChatId = null;
         let currentChatType = null;
         let currentChannel = 'geral';
         let isSidebarCollapsed = false;
         let currentChatListener = null;
+        let currentGroupNameListener = null; // New listener for name changes
         let currentGroupData = null;
         let selectedMemberId = null;
         let blockedUsers = {};
@@ -677,8 +764,6 @@
             
             // Para HTML5: manter controles visíveis mas bloqueados via overlay
             html5Player.setAttribute('controls', 'controls');
-            
-            // Para YouTube: os controles do iframe ficam visíveis mas eventos são bloqueados via onYoutubeStateChange
         }
 
         // --- GLOBAL EXPORTS ---
@@ -755,13 +840,15 @@
                 document.getElementById('app-screen').style.display = 'block';
                 document.getElementById('sidebar-name').innerText = user.displayName || "Usuário";
                 
-                let photo = `https://ui-avatars.com/api/?name=${user.displayName || "User"}&background=9333ea&color=fff`;
-                try {
-                    const snap = await get(ref(db, `users/${user.uid}`));
-                    if(snap.exists() && snap.val().photo) photo = snap.val().photo;
-                } catch(e) {}
+                // Fetch profile once and cache it
+                get(ref(db, `users/${user.uid}`)).then(s => {
+                    if(s.exists()) currentUserData = s.val();
+                    else currentUserData = { name: user.displayName, photo: user.photoURL };
+                    
+                    const photo = currentUserData.photo || `https://ui-avatars.com/api/?name=${user.displayName}&background=9333ea&color=fff`;
+                    document.getElementById('sidebar-avatar').src = photo;
+                });
                 
-                document.getElementById('sidebar-avatar').src = photo;
                 loadChats();
                 loadBlocked();
             } else {
@@ -792,10 +879,19 @@
 
         window.enableNotifications = () => {
             if("Notification" in window) {
-                Notification.requestPermission().then(p => { if(p==="granted") showToast("Notificações ativadas!"); });
+                Notification.requestPermission().then(p => { 
+                    if(p==="granted") showToast("Notificações ativadas!"); 
+                    else showToast("Permissão negada no navegador", "error");
+                });
             }
         };
-        function playSound() { document.getElementById('notify-sound').play().catch(e => {}); }
+        
+        function playSound() { 
+            // Only play if hidden
+            if(document.hidden) {
+                document.getElementById('notify-sound').play().catch(e => {}); 
+            }
+        }
 
         function loadChats() {
             onValue(ref(db, `users/${user.uid}/chats`), snap => {
@@ -809,7 +905,11 @@
         }
 
         function createChatItem(id, name, type) {
-            if(document.getElementById(`chat-${id}`)) return;
+            if(document.getElementById(`chat-${id}`)) {
+                // Se já existe, atualiza o nome (para tempo real em grupos)
+                document.querySelector(`#chat-${id} .chat-name`).innerText = name;
+                return;
+            }
             const div = document.createElement('div');
             div.id = `chat-${id}`;
             div.className = 'chat-item';
@@ -818,7 +918,7 @@
                     <span class="material-icons" style="font-size: 18px;">${type === 'group' ? 'groups' : 'person'}</span>
                 </div>
                 <div class="hide-on-collapse" style="flex:1">
-                    <div style="font-weight: 600; font-size: 14px; color: white;">${name}</div>
+                    <div style="font-weight: 600; font-size: 14px; color: white;" class="chat-name">${name}</div>
                     <div style="font-size: 11px; color: var(--text-muted);">${type === 'group' ? 'Grupo' : 'Chat Privado'}</div>
                 </div>
             `;
@@ -830,6 +930,7 @@
             currentChatId = id;
             currentChatType = type;
             currentChannel = 'geral';
+            currentGroupData = null; // Reset immediately to prevent stale data
             
             document.getElementById('chat-title-text').innerText = name;
             document.getElementById('chat-subtitle').innerText = type === 'group' ? 'Canal: #geral' : 'Conversa Privada';
@@ -857,14 +958,26 @@
                 document.getElementById('sidebar').classList.add('shifted');
                 document.getElementById('chat-area').classList.add('active');
             }
+            
+            // Clean up previous name listener
+            if(currentGroupNameListener) { currentGroupNameListener(); currentGroupNameListener = null; }
 
             if(type === 'group') {
+                // Listener for realtime group info changes
                 onValue(ref(db, `groups/${id}`), s => {
                     currentGroupData = s.val();
                     if(!currentGroupData) return; 
+                    
+                    // Update header title in realtime
+                    document.getElementById('chat-title-text').innerText = currentGroupData.name;
+                    // Update sidebar item name via DOM
+                    const sidebarItem = document.querySelector(`#chat-${id} .chat-name`);
+                    if(sidebarItem) sidebarItem.innerText = currentGroupData.name;
+
                     checkPermissions();
-                    updateVideoControlsUI(); // Atualizar UI do vídeo
+                    updateVideoControlsUI(); 
                 });
+                
                 initGroupVideo(id);
             } else {
                 currentGroupData = null;
@@ -874,7 +987,7 @@
             loadMessages();
         };
 
-        // ===== LÓGICA DE VÍDEO SYNC =====
+        // ===== LÓGICA DE VÍDEO SYNC INTELIGENTE =====
         function initGroupVideo(groupId) {
             videoUnsub = onValue(ref(db, `groups/${groupId}/player`), (snap) => {
                 const data = snap.val();
@@ -886,24 +999,39 @@
                     document.getElementById('youtube-player').style.opacity = '1';
                 }
                 
-                // IMPORTANTE: Marcar como update remoto ANTES de fazer qualquer mudança
                 isRemoteUpdate = true;
+
+                // --- CÁLCULO DE TEMPO REAL (SMART SYNC) ---
+                // Se o vídeo está 'playing' no banco, calculamos onde ele DEVERIA estar agora
+                let targetTime = data.currentTime;
+                if(data.status === 'playing' && data.timestamp) {
+                    const now = Date.now();
+                    // Diferença em segundos entre a última atualização do DB e agora
+                    const diffSeconds = (now - data.timestamp) / 1000;
+                    // Adiciona a diferença ao tempo gravado (apenas se for positivo e razoável)
+                    if(diffSeconds > 0 && diffSeconds < 7200) { // Limite de 2h para evitar bugs de data
+                        targetTime += diffSeconds;
+                    }
+                }
+                // -------------------------------------------
 
                 if (data.type === 'youtube') {
                     switchPlayerMode('youtube');
                     if (youtubePlayer && youtubePlayer.loadVideoById) {
                         const currentId = youtubePlayer.getVideoData() ? youtubePlayer.getVideoData().video_id : null;
+                        
+                        // Load Video
                         if(currentId !== data.url) {
-                            youtubePlayer.loadVideoById(data.url);
+                            youtubePlayer.loadVideoById(data.url, targetTime);
                         }
                         
-                        // Sync tempo
-                        const currentTime = youtubePlayer.getCurrentTime();
-                        if(Math.abs(currentTime - data.currentTime) > 2) {
-                            youtubePlayer.seekTo(data.currentTime, true);
+                        // Sync Time (se diferença > 2s)
+                        const playerTime = youtubePlayer.getCurrentTime();
+                        if(Math.abs(playerTime - targetTime) > 2) {
+                            youtubePlayer.seekTo(targetTime, true);
                         }
                         
-                        // Sync status - TODOS recebem (admins e membros)
+                        // Sync Status
                         const state = youtubePlayer.getPlayerState();
                         if(data.status === 'playing' && state !== 1) {
                             youtubePlayer.playVideo();
@@ -917,16 +1045,17 @@
                     switchPlayerMode('html5');
                     if(html5Player.getAttribute('src') !== data.url) {
                         html5Player.src = data.url;
+                        html5Player.currentTime = targetTime; // Set initial time
                     }
                     
-                    // Sync tempo
-                    if(Math.abs(html5Player.currentTime - data.currentTime) > 2) {
-                        html5Player.currentTime = data.currentTime;
+                    // Sync Time
+                    if(Math.abs(html5Player.currentTime - targetTime) > 2) {
+                        html5Player.currentTime = targetTime;
                     }
                     
-                    // Sync status - TODOS recebem (admins e membros)
+                    // Sync Status
                     if(data.status === 'playing' && html5Player.paused) {
-                        html5Player.play().catch(e => console.log('Autoplay bloqueado:', e));
+                        html5Player.play().catch(e => console.log('Autoplay blocked:', e));
                     }
                     if(data.status === 'paused' && !html5Player.paused) {
                         html5Player.pause();
@@ -935,10 +1064,7 @@
                 
                 document.getElementById('video-url-input').value = data.fullUrl || "";
                 
-                // IMPORTANTE: Desmarcar update remoto DEPOIS de aplicar mudanças
-                setTimeout(() => { isRemoteUpdate = false; }, 100);
-                
-                // Atualizar UI de controles após cada sync
+                setTimeout(() => { isRemoteUpdate = false; }, 500); // Maior delay para garantir sync
                 updateVideoControlsUI();
             });
         }
@@ -961,42 +1087,38 @@
             return (m && m[2].length === 11) ? m[2] : null;
         }
 
-        // Eventos HTML5 - COM VERIFICAÇÃO DE PERMISSÃO
+        // Eventos HTML5
         html5Player.onplay = () => {
-            if(isRemoteUpdate) return; // Permitir play remoto
+            if(isRemoteUpdate) return; 
             if(canControlVideo()) {
                 updateState('playing', html5Player.currentTime);
             } else {
-                html5Player.pause(); // Bloquear play manual
+                html5Player.pause(); 
                 showToast("🔒 Apenas admins podem controlar o vídeo", "error");
             }
         };
         html5Player.onpause = () => {
-            if(isRemoteUpdate) return; // Permitir pause remoto
+            if(isRemoteUpdate) return;
             if(canControlVideo()) {
                 updateState('paused', html5Player.currentTime);
-            } else {
-                // Se foi pausado manualmente por membro, não fazer nada (já está pausado)
             }
         };
         html5Player.onseeked = () => {
-            if(isRemoteUpdate) return; // Permitir seek remoto
+            if(isRemoteUpdate) return;
             if(canControlVideo()) {
                 updateState(html5Player.paused ? 'paused' : 'playing', html5Player.currentTime);
             } else {
-                // Bloquear seek manual - voltar ao tempo correto será feito pelo listener do Firebase
                 showToast("🔒 Apenas admins podem controlar o vídeo", "error");
             }
         };
 
-        // Eventos YouTube - COM VERIFICAÇÃO DE PERMISSÃO
+        // Eventos YouTube
         function onYoutubeStateChange(e) {
             if(isRemoteUpdate) return;
             if(!canControlVideo()) {
-                // Bloquear controle: pausar se tentou dar play
-                if(e.data === YT.PlayerState.PLAYING) {
-                    youtubePlayer.pauseVideo();
-                    showToast("🔒 Apenas admins podem controlar o vídeo", "error");
+                if(e.data === YT.PlayerState.PLAYING || e.data === YT.PlayerState.PAUSED) {
+                     // We don't force pause here immediately to avoid jitter, 
+                     // rely on the DB update loop to correct state for non-admins
                 }
                 return;
             }
@@ -1010,10 +1132,14 @@
 
         function updateState(status, time) {
             if(isRemoteUpdate || !currentChatId) return;
-            if(!canControlVideo()) return; // Segurança extra
+            if(!canControlVideo()) return;
             
+            // Grava o timestamp do servidor para o cálculo de delta
             update(ref(db, `groups/${currentChatId}/player`), {
-                status, currentTime: time, timestamp: serverTimestamp(), lastUpdatedBy: user.displayName
+                status, 
+                currentTime: time, 
+                timestamp: serverTimestamp(), // SERVER TIME KEY
+                lastUpdatedBy: user.displayName
             });
         }
         
@@ -1031,7 +1157,8 @@
                 url: ytId || url,
                 fullUrl: url,
                 status: 'playing',
-                currentTime: 0
+                currentTime: 0,
+                timestamp: serverTimestamp()
             });
             showToast("Vídeo carregado!");
         };
@@ -1096,9 +1223,12 @@
                     });
                     list.scrollTop = list.scrollHeight;
                     
-                    if(lastMsg && lastMsg.senderId !== user.uid && document.hidden) {
+                    // Notification Logic
+                    if(lastMsg && lastMsg.senderId !== user.uid) {
                         playSound();
-                        if("Notification" in window && Notification.permission === "granted") new Notification("Nova mensagem");
+                        if(document.hidden && "Notification" in window && Notification.permission === "granted") {
+                            new Notification(`Mensagem de ${lastMsg.sender}`, { body: lastMsg.text || 'Nova mídia' });
+                        }
                     }
                 }
             });
@@ -1110,35 +1240,44 @@
         };
 
         window.sendMessage = async (content=null, type='text') => {
-            if(!currentChatId) return;
+            if(!currentChatId || !user) return;
+            
             const input = document.getElementById('msg-input');
             const text = input.value.trim();
-            if(!content && !text) return;
+            if(!content && !text) return; // Prevent empty messages
 
+            // Private Chat Block check
             if(currentChatType === 'private') {
-                const targetUid = currentChatId.split('_').find(id => id !== user.uid);
+                const parts = currentChatId.split('_');
+                const targetUid = parts.find(id => id !== user.uid);
                 if(blockedUsers[targetUid]) return showToast("Usuário Bloqueado", "error");
             }
 
-            let photo = "";
-            try {
-                const userSnap = await get(ref(db, `users/${user.uid}`));
-                photo = userSnap.val()?.photo || "";
-            } catch(e) {}
-            
-            const displayName = user.displayName || "Usuário";
+            // Use cached profile data to avoid delay
+            const displayName = currentUserData.name || user.displayName || "Usuário";
+            const photo = currentUserData.photo || user.photoURL || "";
 
             const path = currentChatType === 'group' ? `messages/${currentChatId}/${currentChannel}` : `messages/${currentChatId}`;
 
-            push(ref(db, path), {
-                text: content || text,
-                type: type,
-                sender: displayName,
-                senderId: user.uid,
-                avatar: photo,
-                timestamp: Date.now()
-            });
+            // Clear input immediately for UX
             input.value = "";
+            input.focus();
+
+            try {
+                await push(ref(db, path), {
+                    text: content || text,
+                    type: type,
+                    sender: displayName,
+                    senderId: user.uid,
+                    avatar: photo,
+                    timestamp: serverTimestamp() // Use server timestamp for better ordering
+                });
+            } catch(e) {
+                console.error("Send error:", e);
+                showToast("Erro ao enviar mensagem", "error");
+                // Restore input if failed (optional, but good UX)
+                if(!content) input.value = text;
+            }
         };
 
         function renderMessage(key, msg) {
@@ -1254,6 +1393,8 @@
         };
 
         window.openGroupInfo = () => {
+            if (!currentGroupData) return showToast("Aguarde o carregamento do grupo...", "info");
+
             const modal = document.getElementById('modal-group-info');
             modal.style.display = 'flex';
             document.getElementById('info-group-name').innerText = currentGroupData.name;
@@ -1442,12 +1583,17 @@
             const app = document.getElementById('chk-approval').checked;
             const videoRestricted = document.getElementById('chk-video-restricted').checked;
             
+            // Save updates
             await update(ref(db, `groups/${currentChatId}`), { 
                 name: name, 
                 settings: { approval: app, videoRestricted: videoRestricted } 
             });
+
+            // Update local user's list for this group name (and all other users will need to refresh list or we rely on re-fetch)
+            // Ideally we iterate members to update their lists, but for now we update the group source truth.
+            
             showToast("Salvo");
-            updateVideoControlsUI(); // Atualizar UI imediatamente
+            updateVideoControlsUI();
         };
 
         window.deleteGroup = async () => {
@@ -1550,33 +1696,92 @@
             if(!isOpen) searchStickers('trending');
         };
 
-        window.searchStickers = async (q) => {
+        let searchTimeout = null;
+
+        window.searchStickers = (q) => {
             const resDiv = document.getElementById('sticker-results');
-            try {
-                const url = `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${q || 'trending'}&limit=12&rating=g`;
-                const req = await fetch(url);
-                const json = await req.json();
-                resDiv.innerHTML = "";
-                json.data.forEach(gif => {
-                    const img = document.createElement('img');
-                    img.src = gif.images.fixed_height_small.url;
-                    img.style.width = "100%";
-                    img.style.borderRadius = "10px";
-                    img.style.cursor = "pointer";
-                    img.onclick = () => { sendMessage(gif.images.fixed_height.url, 'sticker'); window.toggleStickers(); };
-                    resDiv.appendChild(img);
-                });
-            } catch(e) {}
+            
+            // Clear previous timeout
+            if (searchTimeout) clearTimeout(searchTimeout);
+
+            // Show loading immediately if it's a new search
+            if(!resDiv.innerHTML.includes('img')) {
+                 resDiv.innerHTML = '<div style="padding:20px; text-align:center; color:gray; grid-column:span 2;">Carregando...</div>';
+            }
+
+            searchTimeout = setTimeout(async () => {
+                try {
+                    let url;
+                    if (!q || q.trim() === '') {
+                        url = `https://api.giphy.com/v1/gifs/trending?api_key=${GIPHY_API_KEY}&limit=20&rating=g`;
+                    } else {
+                        url = `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${encodeURIComponent(q)}&limit=20&rating=g`;
+                    }
+                    
+                    const req = await fetch(url);
+                    const json = await req.json();
+                    resDiv.innerHTML = "";
+                    
+                    if(!json.data || json.data.length === 0) {
+                        resDiv.innerHTML = '<div style="padding:20px; text-align:center; color:gray; grid-column:span 2;">Nenhum GIF encontrado.</div>';
+                        return;
+                    }
+
+                    json.data.forEach(gif => {
+                        const img = document.createElement('img');
+                        // Use fixed_width_downsampled or fixed_height_small for grid performance
+                        img.src = gif.images.fixed_height_small.url; 
+                        img.style.width = "100%";
+                        img.style.height = "100px"; // Fixed height for cleaner grid
+                        img.style.objectFit = "cover";
+                        img.style.borderRadius = "8px";
+                        img.style.cursor = "pointer";
+                        img.title = gif.title;
+                        
+                        img.onclick = () => { 
+                            sendMessage(gif.images.original.url, 'sticker'); 
+                            window.toggleStickers(); 
+                        };
+                        resDiv.appendChild(img);
+                    });
+                } catch(e) {
+                    console.error(e);
+                    resDiv.innerHTML = '<div style="padding:20px; text-align:center; color:#ef4444; grid-column:span 2;">Erro na conexão com Giphy.</div>';
+                }
+            }, 500); // 500ms debounce
         };
 
+        // ===== PROFILE & BIO SYSTEM =====
         window.viewProfile = async (uid) => {
             try {
                 const snap = await get(ref(db, `users/${uid}`));
                 if(snap.exists()) {
                     const d = snap.val();
                     document.getElementById('view-name').innerText = d.name;
-                    document.getElementById('view-email').innerText = d.email;
+                    
+                    // Avatar
                     document.getElementById('view-avatar').src = d.photo || `https://ui-avatars.com/api/?name=${d.name}&background=9333ea&color=fff&rounded=true`;
+                    
+                    // Banner
+                    const bannerUrl = d.banner || "";
+                    document.getElementById('view-banner').style.backgroundImage = bannerUrl ? `url('${bannerUrl}')` : "none";
+                    document.getElementById('view-banner').style.backgroundColor = bannerUrl ? "transparent" : "#334155";
+                    
+                    // Bio
+                    document.getElementById('view-bio').innerText = d.bio || "Sem biografia.";
+                    
+                    // Socials
+                    const socDiv = document.getElementById('view-socials');
+                    socDiv.innerHTML = "";
+                    if(d.socials) {
+                        if(d.socials.instagram) {
+                            socDiv.innerHTML += `<a href="${d.socials.instagram}" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>`;
+                        }
+                        if(d.socials.twitter) {
+                            socDiv.innerHTML += `<a href="${d.socials.twitter}" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>`;
+                        }
+                    }
+
                     document.getElementById('modal-user-view').style.display = 'flex';
                 }
             } catch(e) {}
@@ -1621,22 +1826,59 @@
                 document.getElementById('sidebar-avatar').src = url;
             } catch(e) {}
         };
+        
+        window.uploadBannerImgBB = async (input) => {
+            const file = input.files[0];
+            if(!file) return;
+            const fd = new FormData(); fd.append("image", file);
+            try {
+                showToast("Enviando capa...");
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: fd });
+                const json = await res.json();
+                const url = json.data.url;
+                await update(ref(db, `users/${user.uid}`), { banner: url });
+                document.getElementById('edit-banner-preview').style.backgroundImage = `url('${url}')`;
+                showToast("Capa atualizada!");
+            } catch(e) { showToast("Erro no envio", "error"); }
+        };
 
         window.saveProfileChanges = async () => {
             const name = document.getElementById('edit-name').value;
+            const bio = document.getElementById('edit-bio').value;
+            const insta = document.getElementById('edit-instagram').value;
+            const twitter = document.getElementById('edit-twitter').value;
+
             if(name) {
                 await updateProfile(user, { displayName: name });
                 await update(ref(db, `users/${user.uid}`), { name });
                 document.getElementById('sidebar-name').innerText = name;
             }
+            
+            await update(ref(db, `users/${user.uid}`), { 
+                bio: bio,
+                socials: { instagram: insta, twitter: twitter }
+            });
+            
+            showToast("Perfil salvo com sucesso!");
             closeModals();
         };
 
-        window.openSettings = () => {
+        window.openSettings = async () => {
             document.getElementById('modal-settings').style.display = 'flex';
             document.getElementById('settings-avatar').src = document.getElementById('sidebar-avatar').src;
             document.getElementById('edit-name').value = user.displayName;
+            
+            // Load current data
+            const s = await get(ref(db, `users/${user.uid}`));
+            if(s.exists()) {
+                const d = s.val();
+                document.getElementById('edit-bio').value = d.bio || "";
+                document.getElementById('edit-instagram').value = d.socials?.instagram || "";
+                document.getElementById('edit-twitter').value = d.socials?.twitter || "";
+                if(d.banner) document.getElementById('edit-banner-preview').style.backgroundImage = `url('${d.banner}')`;
+            }
         };
+        
         window.openAddModal = () => document.getElementById('modal-add').style.display = 'flex';
         window.closeModals = () => document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
         
